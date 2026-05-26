@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Runtime data dirs (user content, not source)
+uploads/
+outputs/
+downloads/
+completed_outputs.json
+
+# Logs
+*.log
+
+# Python venv
+.venv/
+venv/
+env/

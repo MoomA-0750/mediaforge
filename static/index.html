@@ -1,0 +1,3688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediaForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+(function(){var s=localStorage.getItem('mf-theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='light'||(s!=='dark'&&!d))document.documentElement.classList.add('light');})();
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "surface":                  "var(--c-surface)",
+        "surface-dim":              "var(--c-surface)",
+        "surface-container-lowest": "var(--c-surface-code)",
+        "surface-container-low":    "var(--c-surface-low)",
+        "surface-container":        "var(--c-surface-mid)",
+        "surface-container-high":   "var(--c-surface-high)",
+        "surface-container-highest":"var(--c-surface-highest)",
+        "surface-variant":          "var(--c-surface-highest)",
+        "surface-bright":           "var(--c-surface-mid)",
+        "background":               "var(--c-surface)",
+        "primary":                  "var(--c-primary)",
+        "primary-container":        "rgb(var(--c-primary-dim-rgb) / <alpha-value>)",
+        "primary-fixed":            "var(--c-primary-dim)",
+        "primary-fixed-dim":        "var(--c-primary-dim)",
+        "on-primary":               "var(--c-on-primary)",
+        "on-primary-container":     "var(--c-on-primary)",
+        "on-primary-fixed":         "var(--c-on-primary)",
+        "secondary":                "var(--c-secondary)",
+        "secondary-container":      "var(--c-secondary-cont)",
+        "on-secondary":             "var(--c-on-primary)",
+        "on-secondary-container":   "var(--c-on-secondary-cont)",
+        "tertiary":                 "var(--c-tertiary)",
+        "tertiary-container":       "var(--c-tertiary)",
+        "on-tertiary":              "var(--c-on-primary)",
+        "on-tertiary-container":    "var(--c-on-surface)",
+        "error":                    "var(--c-error)",
+        "error-container":          "rgb(var(--c-error-bg-rgb) / <alpha-value>)",
+        "on-error":                 "var(--c-on-primary)",
+        "on-error-container":       "var(--c-on-error-bg)",
+        "on-surface":               "var(--c-on-surface)",
+        "on-surface-variant":       "var(--c-on-surface-muted)",
+        "on-background":            "var(--c-on-surface)",
+        "outline":                  "var(--c-outline)",
+        "outline-variant":          "var(--c-outline-var)",
+        "inverse-surface":          "var(--c-on-surface)",
+        "inverse-on-surface":       "var(--c-surface)",
+        "inverse-primary":          "var(--c-primary)",
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        "2xl": "1rem",
+        full: "9999px",
+      },
+    },
+  },
+};
+</script>
+<style>
+/* ── Theme tokens ──────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+  --c-surface:#121416;     --c-surface-code:#0c0e10;
+  --c-surface-low:#1a1c1e; --c-surface-mid:#1e2022;
+  --c-surface-high:#282a2c;--c-surface-highest:#333537;
+  --c-primary:#d3e2ff;     --c-primary-dim:#a8c7fa;   --c-on-primary:#0a315b;
+  --c-secondary-cont:#294d61; --c-on-secondary-cont:#99bdd4;
+  --c-secondary:#a7cbe3;   --c-tertiary:#b6c7df;
+  --c-on-surface:#e2e2e5;  --c-on-surface-muted:#c3c6d0;
+  --c-outline:#8d9199;     --c-outline-var:#43474f;
+  --c-error:#ffb4ab;       --c-error-bg:#93000a;    --c-on-error-bg:#ffdad6;
+  --c-success:#9bc99a;     --c-success-bg:#192a19;  --c-success-bd:#2a4d2a;
+  --c-selection-bg:rgba(211,226,255,0.12);
+  --c-upload-hover:rgba(211,226,255,0.04); --c-upload-active-border:#a9c8fb;
+  --c-modal-bg:rgba(9,11,13,0.97);
+  --c-teal-btn:#1e3a4d;    --c-teal-text:#a9c8ff;
+  --c-crop-overlay:rgba(0,0,0,0.5);
+  --c-error-bg-rgb:147 0 10;
+  --c-primary-dim-rgb:168 199 250;
+}
+:root.light {
+  color-scheme: light;
+  --c-surface:#f9f9fc;     --c-surface-code:#f0f0f3;
+  --c-surface-low:#f3f3f6; --c-surface-mid:#eaeaed;
+  --c-surface-high:#e3e3e6;--c-surface-highest:#dcdcdf;
+  --c-primary:#2563eb;     --c-primary-dim:#93c5fd;   --c-on-primary:#ffffff;
+  --c-secondary-cont:#dbeafe; --c-on-secondary-cont:#1e3a5f;
+  --c-secondary:#475569;   --c-tertiary:#64748b;
+  --c-on-surface:#1a1c1e;  --c-on-surface-muted:#44474f;
+  --c-outline:#74777f;     --c-outline-var:#c4c7d0;
+  --c-error:#dc2626;       --c-error-bg:#fee2e2;    --c-on-error-bg:#7f1d1d;
+  --c-success:#15803d;     --c-success-bg:#dcfce7;  --c-success-bd:#bbf7d0;
+  --c-selection-bg:rgba(37,99,235,0.12);
+  --c-upload-hover:rgba(37,99,235,0.05);   --c-upload-active-border:#93c5fd;
+  --c-modal-bg:rgba(245,245,248,0.97);
+  --c-teal-btn:#dbeafe;    --c-teal-text:#1e3a5f;
+  --c-crop-overlay:rgba(0,0,0,0.25);
+  --c-error-bg-rgb:254 226 226;
+  --c-primary-dim-rgb:147 197 253;
+}
+/* ── Base ──────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+body { background:var(--c-surface); color:var(--c-on-surface); font-family:Inter,sans-serif; margin:0; -webkit-font-smoothing:antialiased; }
+.material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align:middle; }
+.fill-icon { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--c-outline-var); border-radius:4px; }
+.view { display:none; }
+.view.active { display:flex; flex-direction:column; }
+input[type=range] { appearance:none; -webkit-appearance:none; height:4px; border-radius:2px; outline:none; cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--c-primary); cursor:pointer; }
+select { background-image:none; }
+/* ── Nav ─────────────────────────────────────────────────────────── */
+.nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 20px; cursor:pointer; color:var(--c-on-surface-muted); transition:color 0.15s; }
+.nav-item.active { background:var(--c-secondary-cont); border-radius:9999px; color:var(--c-on-secondary-cont); }
+.nav-item span.material-symbols-outlined.fill-icon { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+/* ── Progress ─────────────────────────────────────────────────────── */
+.progress-bar { height:4px; background:var(--c-surface-highest); border-radius:2px; overflow:hidden; }
+.progress-bar-fill { height:100%; background:var(--c-primary); border-radius:2px; transition:width 0.3s; }
+/* ── Toggle ──────────────────────────────────────────────────────── */
+.toggle { position:relative; width:48px; height:28px; border-radius:14px; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+.toggle.on  { background:var(--c-primary); }
+.toggle.off { background:var(--c-outline-var); }
+.toggle-thumb { position:absolute; top:4px; width:20px; height:20px; border-radius:50%; transition:left 0.2s,background 0.2s; }
+.toggle.on  .toggle-thumb { left:24px; background:var(--c-on-primary); }
+.toggle.off .toggle-thumb { left:4px; background:var(--c-outline); }
+/* ── Chip ─────────────────────────────────────────────────────────── */
+.chip { display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:9999px; font-size:11px; font-weight:500; font-family:'JetBrains Mono',monospace; }
+/* ── Cards ────────────────────────────────────────────────────────── */
+.card     { background:var(--c-surface-mid); border:1px solid var(--c-outline-var); border-radius:12px; }
+.card-low { background:var(--c-surface-low); border:1px solid var(--c-outline-var); border-radius:12px; }
+/* ── Buttons ──────────────────────────────────────────────────────── */
+.btn-primary { background:var(--c-primary); color:var(--c-on-primary); border-radius:12px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:opacity 0.15s,transform 0.1s; border:none; }
+.btn-primary:hover { opacity:0.9; }
+.btn-primary:active { transform:scale(0.98); }
+.btn-secondary { background:var(--c-secondary-cont); color:var(--c-on-secondary-cont); border-radius:8px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; transition:opacity 0.15s; border:none; }
+.btn-secondary:hover { opacity:0.85; }
+/* ── Inputs ───────────────────────────────────────────────────────── */
+.input-field { -webkit-appearance:none; appearance:none; background:var(--c-surface); border:1px solid var(--c-outline); border-radius:8px; color:var(--c-on-surface); padding:10px 14px; font-size:14px; width:100%; outline:none; transition:border-color 0.15s; }
+.input-field:focus { border-color:var(--c-primary); }
+.select-field { -webkit-appearance:none; appearance:none; background:var(--c-surface); border:1px solid var(--c-outline); border-radius:8px; color:var(--c-on-surface); padding:10px 14px; font-size:14px; width:100%; outline:none; cursor:pointer; transition:border-color 0.15s; }
+.select-field:focus { border-color:var(--c-primary); }
+.label { font-size:12px; color:var(--c-on-surface-muted); margin-bottom:4px; font-family:'JetBrains Mono',monospace; letter-spacing:0.05em; }
+/* ── Code / Log ───────────────────────────────────────────────────── */
+.code-block { background:var(--c-surface-code); border:1px solid var(--c-outline-var); border-radius:8px; padding:12px 16px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-on-secondary-cont); overflow-x:auto; white-space:pre; }
+.log-area   { background:var(--c-surface-code); border:1px solid var(--c-outline-var); border-radius:8px; padding:12px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-on-surface-muted); height:160px; overflow-y:auto; }
+/* ── Modal / Overlay ─────────────────────────────────────────────── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; }
+.modal-box { background:var(--c-surface-mid); border:1px solid var(--c-outline-var); border-radius:16px; width:100%; max-width:480px; max-height:80vh; display:flex; flex-direction:column; }
+/* ── File browser ─────────────────────────────────────────────────── */
+.file-row { display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:8px; cursor:pointer; transition:background 0.15s; }
+.file-row:hover { background:var(--c-surface-high); }
+/* ── Upload ───────────────────────────────────────────────────────── */
+.upload-zone { border:2px dashed var(--c-outline-var); border-radius:12px; padding:24px; text-align:center; transition:border-color 0.2s,background 0.2s; cursor:pointer; }
+.upload-zone:hover,.upload-zone.drag-over { border-color:var(--c-upload-active-border); background:var(--c-upload-hover); }
+.upload-progress-bar { height:3px; background:var(--c-outline-var); border-radius:2px; overflow:hidden; margin-top:8px; }
+.upload-progress-fill { height:100%; background:var(--c-primary); border-radius:2px; transition:width 0.2s; width:0%; }
+/* ── Crop canvas ──────────────────────────────────────────────────── */
+.crop-canvas-wrap { position:relative; display:inline-block; cursor:crosshair; border-radius:8px; touch-action:none; user-select:none; }
+.crop-canvas-wrap img { display:block; max-width:100%; border-radius:8px; }
+.crop-box { position:absolute; border:2px solid var(--c-primary); cursor:move; touch-action:none; z-index:2; }
+.crop-ov { position:absolute; background:var(--c-crop-overlay); pointer-events:none; z-index:1; }
+.crop-handle-hit { position:absolute; width:44px; height:44px; display:flex; align-items:center; justify-content:center; touch-action:none; z-index:3; }
+.crop-handle-hit::after { content:''; width:10px; height:10px; background:var(--c-primary); border-radius:50%; display:block; box-shadow:0 0 0 2px rgba(0,0,0,0.4); }
+.ch-tl{top:-22px;left:-22px;cursor:nw-resize;} .ch-tr{top:-22px;right:-22px;cursor:ne-resize;}
+.ch-bl{bottom:-22px;left:-22px;cursor:sw-resize;} .ch-br{bottom:-22px;right:-22px;cursor:se-resize;}
+.ch-ml{top:50%;left:-22px;transform:translateY(-50%);cursor:w-resize;} .ch-mr{top:50%;right:-22px;transform:translateY(-50%);cursor:e-resize;}
+.ch-tm{left:50%;top:-22px;transform:translateX(-50%);cursor:n-resize;} .ch-bm{left:50%;bottom:-22px;transform:translateX(-50%);cursor:s-resize;}
+.fp-cb { width:20px; height:20px; border-radius:4px; border:2px solid var(--c-outline); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s,border-color 0.15s; }
+.fp-cb.checked { background:var(--c-primary); border-color:var(--c-primary); }
+.fp-cb.checked::after { content:''; width:10px; height:10px; background:var(--c-on-primary); clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); display:block; }
+/* ── Trim timeline ────────────────────────────────────────────────── */
+#trim-timeline { position:relative; height:80px; background:var(--c-surface-high); border-radius:12px; border:1px solid var(--c-outline-var); overflow:hidden; cursor:pointer; user-select:none; touch-action:none; }
+#trim-selection { position:absolute; top:0; bottom:0; background:var(--c-selection-bg); border-left:3px solid var(--c-primary); border-right:3px solid var(--c-primary); }
+#trim-playhead { position:absolute; top:0; bottom:0; width:2px; background:var(--c-secondary); pointer-events:none; }
+.trim-handle { position:absolute; top:50%; transform:translate(-50%,-50%); width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:ew-resize; touch-action:none; z-index:2; }
+.trim-handle::after { content:''; width:22px; height:22px; background:var(--c-primary); border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.4); display:block; }
+.waveform-bar { display:inline-block; width:2px; margin:0 1px; background:var(--c-outline-var); border-radius:1px; }
+/* ── Download ─────────────────────────────────────────────────────── */
+.dl-preset { display:inline-flex; align-items:center; gap:4px; padding:4px 14px; border-radius:9999px; font-size:12px; font-weight:500; border:1px solid var(--c-outline-var); color:var(--c-on-surface-muted); background:transparent; cursor:pointer; transition:all 0.15s; }
+.dl-preset:hover { border-color:var(--c-outline); }
+.dl-preset.active { background:var(--c-primary); color:var(--c-on-primary); border-color:var(--c-primary); }
+/* ── Operation / filter pills ─────────────────────────────────────── */
+.op-pill { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:6px 18px; border-radius:9999px; font-size:14px; font-weight:500; border:1.5px solid var(--c-outline-var); color:var(--c-on-surface-muted); background:transparent; cursor:pointer; transition:background 0.15s,color 0.15s,border-color 0.15s; }
+.op-pill:hover { border-color:var(--c-outline); color:var(--c-on-surface); }
+.op-pill.active { background:var(--c-primary); color:var(--c-on-primary); border-color:var(--c-primary); }
+.op-pill-sm { padding:4px 14px; font-size:12px; }
+.op-pill-sm.active { background:var(--c-primary); color:var(--c-on-primary); border-color:var(--c-primary); }
+.fmt-card { padding:8px 10px; border-radius:12px; border:1px solid var(--c-outline-var); cursor:pointer; transition:all 0.15s; min-width:68px; text-align:center; background:transparent; }
+.fmt-card:hover { border-color:var(--c-outline); background:var(--c-surface-mid); }
+.fmt-card.selected { border-color:var(--c-primary); background:var(--c-secondary-cont); }
+@keyframes spin { to { transform:rotate(360deg); } }
+.spin { animation:spin 1s linear infinite; display:inline-block; }
+.snav-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px; cursor:pointer; color:var(--c-on-surface-muted); transition:background 0.15s, color 0.15s; }
+.snav-item:hover { background:var(--c-surface-mid); color:var(--c-on-surface); }
+.snav-item.active { background:var(--c-secondary-cont); color:var(--c-on-secondary-cont); }
+.snav-item.active .material-symbols-outlined { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+</style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+<!-- ═══════════════════════════════════════════════════════ TOP BAR -->
+<header class="lg:hidden sticky top-0 z-50 bg-surface flex justify-between items-center px-4 h-14 border-b border-outline-variant">
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined fill-icon text-primary text-2xl">auto_awesome</span>
+    <span class="font-bold text-primary text-lg tracking-tight">MediaForge</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <span id="sys-cpu" class="chip" style="background:var(--c-secondary-cont);color:var(--c-on-secondary-cont)">CPU --</span>
+    <span id="sys-temp" class="chip" style="background:var(--c-surface-mid);color:var(--c-on-surface-muted);border:1px solid var(--c-outline-var)">-- °C</span>
+    <button onclick="showView('settings')" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant">
+      <span class="material-symbols-outlined text-xl">settings</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════ DESKTOP SIDEBAR -->
+<aside class="hidden lg:flex flex-col fixed left-0 top-0 bottom-0 w-56 z-50 bg-surface border-r border-outline-variant">
+  <!-- Brand -->
+  <div class="flex items-center gap-2 px-4 h-14 border-b border-outline-variant flex-shrink-0">
+    <span class="material-symbols-outlined fill-icon text-primary text-2xl">auto_awesome</span>
+    <span class="font-bold text-primary text-lg tracking-tight">MediaForge</span>
+  </div>
+  <!-- Nav items -->
+  <nav class="flex-1 overflow-y-auto py-2 space-y-0.5 px-2">
+    <div class="snav-item active" id="snav-dashboard" onclick="showView('dashboard')">
+      <span class="material-symbols-outlined fill-icon text-xl">dashboard</span>
+      <span class="text-sm">Home</span>
+    </div>
+    <div class="snav-item" id="snav-convert" onclick="showView('convert')">
+      <span class="material-symbols-outlined text-xl">sync</span>
+      <span class="text-sm">Video</span>
+    </div>
+    <div class="snav-item" id="snav-image" onclick="showView('image')">
+      <span class="material-symbols-outlined text-xl">image</span>
+      <span class="text-sm">Image</span>
+    </div>
+    <div class="snav-item" id="snav-download" onclick="showView('download')">
+      <span class="material-symbols-outlined text-xl">download</span>
+      <span class="text-sm">Download</span>
+    </div>
+    <div class="snav-item" id="snav-files" onclick="showView('files')">
+      <span class="material-symbols-outlined text-xl">folder</span>
+      <span class="text-sm">Files</span>
+    </div>
+    <div class="snav-item" id="snav-queue" onclick="showView('queue')">
+      <span class="material-symbols-outlined text-xl">queue</span>
+      <span class="text-sm">Queue</span>
+    </div>
+    <div class="snav-item" id="snav-settings" onclick="showView('settings')">
+      <span class="material-symbols-outlined text-xl">settings</span>
+      <span class="text-sm">Settings</span>
+    </div>
+  </nav>
+  <!-- System stats at bottom -->
+  <div class="flex-shrink-0 border-t border-outline-variant p-3 space-y-2">
+    <div class="flex items-center justify-between text-xs">
+      <span class="text-on-surface-variant">CPU</span>
+      <span id="snav-cpu" class="font-mono text-primary">--%</span>
+    </div>
+    <div class="progress-bar"><div id="snav-cpu-bar" class="progress-bar-fill" style="width:0%"></div></div>
+    <div class="flex items-center justify-between text-xs">
+      <span class="text-on-surface-variant">RAM</span>
+      <span id="snav-mem" class="font-mono" style="color:var(--c-secondary)">--%</span>
+    </div>
+    <div class="progress-bar"><div id="snav-mem-bar" class="progress-bar-fill" style="width:0%;background:var(--c-secondary)"></div></div>
+    <div class="flex items-center justify-between text-xs text-on-surface-variant">
+      <span>Temp</span>
+      <span id="snav-temp" class="font-mono">--</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════ CONTENT -->
+<main class="flex-1 overflow-y-auto pb-24 lg:ml-56 lg:pb-0">
+
+  <!-- ─────────────── DASHBOARD ──────────────────────────────────── -->
+  <div id="view-dashboard" class="view active p-4 gap-4">
+
+    <!-- System Health -->
+    <section>
+      <p class="label uppercase mb-2">System Health</p>
+      <div class="card-low p-4 space-y-3">
+        <div>
+          <div class="flex justify-between mb-1">
+            <span class="text-xs text-on-surface-variant">CPU</span>
+            <span id="dash-cpu" class="text-xs font-mono text-primary">--%</span>
+          </div>
+          <div class="progress-bar"><div id="dash-cpu-bar" class="progress-bar-fill" style="width:0%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between mb-1">
+            <span class="text-xs text-on-surface-variant">RAM</span>
+            <span id="dash-mem" class="text-xs font-mono text-secondary">--%</span>
+          </div>
+          <div class="progress-bar"><div id="dash-mem-bar" class="progress-bar-fill" style="width:0%;background:var(--c-secondary)"></div></div>
+        </div>
+        <div class="flex gap-4 text-xs text-on-surface-variant">
+          <span>Active jobs: <span id="dash-jobs" class="text-on-surface font-mono">0</span></span>
+          <span>Temp: <span id="dash-temp" class="text-on-surface font-mono">--</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section>
+      <p class="label uppercase mb-2">Quick Actions</p>
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="showView('convert')" class="flex flex-col items-center justify-center gap-2 py-5 rounded-2xl bg-secondary-container text-on-secondary-container active:scale-95 transition-transform">
+          <span class="material-symbols-outlined text-3xl">sync</span>
+          <span class="text-sm font-medium">Conversion</span>
+        </button>
+        <button onclick="showView('trim')" class="flex flex-col items-center justify-center gap-2 py-5 rounded-2xl card text-on-surface active:scale-95 transition-transform">
+          <span class="material-symbols-outlined text-3xl text-secondary">content_cut</span>
+          <span class="text-sm font-medium">Trim</span>
+        </button>
+        <button onclick="showView('image')" class="quick-action-btn flex flex-col items-center justify-center gap-2 py-5 rounded-2xl card text-on-surface active:scale-95 transition-transform" data-requires="imagemagick">
+          <span class="material-symbols-outlined text-3xl text-secondary">image</span>
+          <span class="text-sm font-medium">Image</span>
+        </button>
+        <button onclick="showView('download')" class="quick-action-btn flex flex-col items-center justify-center gap-2 py-5 rounded-2xl card text-on-surface active:scale-95 transition-transform" data-requires="yt_dlp">
+          <span class="material-symbols-outlined text-3xl text-secondary">download</span>
+          <span class="text-sm font-medium">Download</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Recent Jobs -->
+    <section>
+      <div class="flex justify-between items-center mb-2">
+        <p class="label uppercase">Recent Jobs</p>
+        <button onclick="showView('queue')" class="text-xs text-primary">View All</button>
+      </div>
+      <div id="dash-recent" class="space-y-2">
+        <p class="text-sm text-on-surface-variant text-center py-4">No jobs yet</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ─────────────── CONVERSION ─────────────────────────────────── -->
+  <div id="view-convert" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Video</h2>
+    <section>
+      <p class="label uppercase mb-2">Operation</p>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="showView('convert')" data-vidop="convert" class="vidop-pill op-pill active">
+          <span class="material-symbols-outlined text-base">sync</span>Convert
+        </button>
+        <button onclick="showView('trim')" data-vidop="trim" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">content_cut</span>Trim
+        </button>
+        <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">crop</span>Crop
+        </button>
+      </div>
+    </section>
+
+    <!-- Input file -->
+    <section>
+      <p class="label uppercase mb-1">Input File</p>
+      <div id="conv-input-display" onclick="openFilePicker('conv-input','video,audio',convFilesChanged,true)"
+           class="card-low rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-surface-container-highest transition-colors select-none">
+        <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0">video_file</span>
+        <span id="conv-input-name" class="text-sm text-on-surface-variant flex-1 truncate">選択なし</span>
+        <span class="material-symbols-outlined text-on-surface-variant text-base flex-shrink-0">chevron_right</span>
+      </div>
+      <input id="conv-input" type="hidden"/>
+      <div id="conv-info" class="mt-2 card-low p-3 text-xs font-mono text-on-surface-variant hidden"></div>
+    </section>
+
+    <!-- Output file (hidden – auto-generated) -->
+    <section class="hidden">
+      <input id="conv-output" class="input-field flex-1" placeholder="/path/to/output.mp4"/>
+    </section>
+
+    <!-- Format & Codec -->
+    <section class="grid grid-cols-2 gap-3">
+      <div>
+        <p class="label uppercase mb-1">Container</p>
+        <div class="relative">
+          <select id="conv-container" class="select-field pr-8" onchange="convContainerChanged()">
+            <option value="mp4">MP4</option>
+            <option value="mkv">MKV</option>
+            <option value="webm">WebM</option>
+            <option value="mov">MOV</option>
+            <option value="avi">AVI</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+      <div>
+        <p class="label uppercase mb-1">Video Codec</p>
+        <div class="relative">
+          <select id="conv-vcodec" class="select-field pr-8" onchange="convUpdate()">
+            <option value="libopenh264">H.264 (OpenH264)</option>
+            <option value="h264_vaapi">H.264 VAAPI (HW)</option>
+            <option value="hevc_vaapi">H.265 VAAPI (HW)</option>
+            <option value="libsvtav1">AV1 (SVT-AV1)</option>
+            <option value="libvpx-vp9">VP9</option>
+            <option value="ffv1">FFV1 (lossless)</option>
+            <option value="copy">Copy (no re-encode)</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+      <div>
+        <p class="label uppercase mb-1">Audio Codec</p>
+        <div class="relative">
+          <select id="conv-acodec" class="select-field pr-8" onchange="convUpdate()">
+            <option value="aac">AAC</option>
+            <option value="libopus">Opus</option>
+            <option value="libmp3lame">MP3</option>
+            <option value="flac">FLAC</option>
+            <option value="copy">Copy</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+      <div>
+        <p class="label uppercase mb-1">Resolution</p>
+        <div class="relative">
+          <select id="conv-res" class="select-field pr-8" onchange="convUpdate()">
+            <option value="">Original</option>
+            <option value="1920:1080">1080p</option>
+            <option value="1280:720">720p</option>
+            <option value="854:480">480p</option>
+            <option value="640:360">360p</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quality -->
+    <section id="conv-quality-section" class="card-low p-4 space-y-4">
+      <div class="flex items-center gap-3 mb-2">
+        <button onclick="setQualityMode('crf')" id="qmode-crf" class="btn-secondary px-3 h-8 text-xs">CRF</button>
+        <button onclick="setQualityMode('bitrate')" id="qmode-bitrate" class="btn-secondary px-3 h-8 text-xs">Bitrate</button>
+      </div>
+      <div id="crf-control">
+        <div class="flex justify-between mb-1">
+          <span class="text-sm text-on-surface">Quality (CRF)</span>
+          <span id="crf-val" class="text-sm font-mono text-primary bg-primary-container/20 px-2 rounded-full">23</span>
+        </div>
+        <input type="range" id="conv-crf" min="0" max="51" value="23" class="w-full" style="background: linear-gradient(to right, var(--c-primary) 45%, var(--c-surface-highest) 45%)" oninput="crfChanged(this)"/>
+        <div class="flex justify-between text-xs text-on-surface-variant mt-1"><span>0 (lossless)</span><span>51 (worst)</span></div>
+      </div>
+      <div id="bitrate-control" class="hidden">
+        <p class="label uppercase mb-1">Target Bitrate</p>
+        <input id="conv-bitrate" class="input-field" placeholder="e.g. 5M, 2000k" oninput="convUpdate()"/>
+      </div>
+    </section>
+
+    <!-- Toggles -->
+    <section class="space-y-1">
+      <div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container transition-colors">
+        <div>
+          <p class="text-sm text-on-surface">Hardware Acceleration</p>
+          <p class="text-xs text-on-surface-variant">NVENC / VAAPI / auto</p>
+        </div>
+        <div class="toggle off" id="tog-hw" onclick="toggleEl('tog-hw'); convUpdate()">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+      <div id="hw-select-wrap" class="px-3 pb-2 hidden">
+        <div class="relative">
+          <select id="conv-hw" class="select-field pr-8 text-sm" onchange="convUpdate()">
+            <option value="auto">Auto</option>
+            <option value="cuda">CUDA / NVENC</option>
+            <option value="vaapi">VAAPI</option>
+            <option value="qsv">Intel QSV</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Command preview -->
+    <section>
+      <p class="label uppercase mb-1">FFmpeg Command</p>
+      <div id="conv-cmd" class="code-block text-xs">ffmpeg ...</div>
+    </section>
+
+    <!-- Start button -->
+    <button onclick="startConvert()" class="btn-primary h-14 text-base font-semibold w-full">
+      <span class="material-symbols-outlined fill-icon">bolt</span>
+      Start Conversion
+    </button>
+  </div>
+
+  <!-- ─────────────── TRIM ────────────────────────────────────────── -->
+  <div id="view-trim" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Video</h2>
+    <section>
+      <p class="label uppercase mb-2">Operation</p>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="showView('convert')" data-vidop="convert" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">sync</span>Convert
+        </button>
+        <button onclick="showView('trim')" data-vidop="trim" class="vidop-pill op-pill active">
+          <span class="material-symbols-outlined text-base">content_cut</span>Trim
+        </button>
+        <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">crop</span>Crop
+        </button>
+      </div>
+    </section>
+
+    <!-- Input -->
+    <section>
+      <p class="label uppercase mb-1">Input File</p>
+      <div id="trim-input-display" onclick="openFilePicker('trim-input','video,audio',trimFilesChanged,true)"
+           class="card-low rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-surface-container-highest transition-colors select-none">
+        <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0">video_file</span>
+        <span id="trim-input-name" class="text-sm text-on-surface-variant flex-1 truncate">選択なし</span>
+        <span class="material-symbols-outlined text-on-surface-variant text-base flex-shrink-0">chevron_right</span>
+      </div>
+      <input id="trim-input" type="hidden"/>
+    </section>
+
+    <!-- Video preview -->
+    <section id="trim-preview-section" class="hidden">
+      <div class="relative rounded-xl overflow-hidden bg-black border border-outline-variant aspect-video">
+        <video id="trim-video" class="w-full h-full object-contain" controls preload="metadata"
+               ontimeupdate="trimVideoTimeUpdate()" onloadedmetadata="trimVideoLoaded()">
+        </video>
+      </div>
+      <div class="flex justify-between text-xs font-mono text-on-surface-variant mt-1 px-1">
+        <span id="trim-current">0:00:00</span>
+        <span id="trim-total">0:00:00</span>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section id="trim-timeline-section" class="hidden">
+      <div class="flex justify-between items-center mb-2">
+        <p class="label uppercase">Timeline</p>
+        <span id="trim-selected-dur" class="text-xs text-primary font-mono">-- selected</span>
+      </div>
+      <div id="trim-timeline">
+        <div id="trim-waveform" class="absolute inset-0 flex items-end px-2 pb-2 opacity-30"></div>
+        <div id="trim-selection"></div>
+        <div id="trim-handle-start" class="trim-handle" style="left:0%"></div>
+        <div id="trim-handle-end" class="trim-handle" style="left:100%"></div>
+        <div id="trim-playhead" style="left:0%"></div>
+      </div>
+    </section>
+
+    <!-- Start / End inputs -->
+    <section id="trim-points-section" class="grid grid-cols-2 gap-3 hidden">
+      <div class="card-low p-3 space-y-2">
+        <p class="label uppercase">Start Point</p>
+        <input id="trim-start" class="input-field font-mono" value="00:00:00" placeholder="HH:MM:SS.ms" oninput="trimUpdate()"/>
+        <button onclick="setTrimStart()" class="btn-secondary w-full h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">my_location</span>Set from player
+        </button>
+      </div>
+      <div class="card-low p-3 space-y-2">
+        <p class="label uppercase">End Point</p>
+        <input id="trim-end" class="input-field font-mono" value="" placeholder="HH:MM:SS.ms" oninput="trimUpdate()"/>
+        <button onclick="setTrimEnd()" class="btn-secondary w-full h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">my_location</span>Set from player
+        </button>
+      </div>
+    </section>
+
+    <!-- Options -->
+    <section id="trim-options-section" class="hidden space-y-1">
+      <div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container transition-colors">
+        <div>
+          <p class="text-sm text-on-surface">Frame-accurate Trim</p>
+          <p class="text-xs text-on-surface-variant">Re-encodes with x264 (slower)</p>
+        </div>
+        <div class="toggle off" id="tog-accurate" onclick="toggleEl('tog-accurate')">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Output (hidden – auto-generated) -->
+    <section id="trim-output-section" class="hidden">
+      <input id="trim-output" class="input-field flex-1" placeholder="/path/to/output.mp4"/>
+    </section>
+
+    <!-- Command preview -->
+    <section id="trim-cmd-section" class="hidden">
+      <p class="label uppercase mb-1">FFmpeg Command</p>
+      <div id="trim-cmd" class="code-block text-xs">ffmpeg ...</div>
+    </section>
+
+    <button id="trim-start-btn" onclick="startTrim()" class="btn-primary h-14 text-base font-semibold w-full hidden">
+      <span class="material-symbols-outlined fill-icon">content_cut</span>
+      Start Trim
+    </button>
+  </div>
+
+  <!-- ─────────────── CROP ────────────────────────────────────────── -->
+  <div id="view-crop" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Video</h2>
+    <section>
+      <p class="label uppercase mb-2">Operation</p>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="showView('convert')" data-vidop="convert" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">sync</span>Convert
+        </button>
+        <button onclick="showView('trim')" data-vidop="trim" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">content_cut</span>Trim
+        </button>
+        <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill active">
+          <span class="material-symbols-outlined text-base">crop</span>Crop
+        </button>
+      </div>
+    </section>
+
+    <!-- Input -->
+    <section>
+      <p class="label uppercase mb-1">Input File</p>
+      <div id="crop-input-display" onclick="openFilePicker('crop-input','video,audio',cropFilesChanged,true)"
+           class="card-low rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-surface-container-highest transition-colors select-none">
+        <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0">video_file</span>
+        <span id="crop-input-name" class="text-sm text-on-surface-variant flex-1 truncate">選択なし</span>
+        <span class="material-symbols-outlined text-on-surface-variant text-base flex-shrink-0">chevron_right</span>
+      </div>
+      <input id="crop-input" type="hidden"/>
+    </section>
+
+    <!-- Aspect presets -->
+    <section id="crop-aspect-section" class="hidden">
+      <p class="label uppercase mb-2">Aspect Ratio Preset</p>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="setCropAspect(16,9)"  data-ar="16:9"  class="aspect-btn op-pill op-pill-sm">16:9</button>
+        <button onclick="setCropAspect(9,16)"  data-ar="9:16"  class="aspect-btn op-pill op-pill-sm">9:16</button>
+        <button onclick="setCropAspect(1,1)"   data-ar="1:1"   class="aspect-btn op-pill op-pill-sm">1:1</button>
+        <button onclick="setCropAspect(4,3)"   data-ar="4:3"   class="aspect-btn op-pill op-pill-sm">4:3</button>
+        <button onclick="setCropAspect(21,9)"  data-ar="21:9"  class="aspect-btn op-pill op-pill-sm">21:9</button>
+        <button onclick="setCropAspect(0,0)"   data-ar="free"  class="aspect-btn op-pill op-pill-sm active">Free</button>
+      </div>
+    </section>
+
+    <!-- Canvas preview -->
+    <section id="crop-canvas-section" class="hidden">
+      <div class="flex justify-center">
+        <div class="crop-canvas-wrap" id="vid-crop-wrap">
+          <img id="crop-thumb" alt="Preview"/>
+          <div class="crop-ov" id="vid-ov-top"></div>
+          <div class="crop-ov" id="vid-ov-bottom"></div>
+          <div class="crop-ov" id="vid-ov-left"></div>
+          <div class="crop-ov" id="vid-ov-right"></div>
+          <div class="crop-box">
+            <div class="crop-handle-hit ch-tl" data-dir="tl"></div>
+            <div class="crop-handle-hit ch-tr" data-dir="tr"></div>
+            <div class="crop-handle-hit ch-bl" data-dir="bl"></div>
+            <div class="crop-handle-hit ch-br" data-dir="br"></div>
+            <div class="crop-handle-hit ch-ml" data-dir="ml"></div>
+            <div class="crop-handle-hit ch-mr" data-dir="mr"></div>
+            <div class="crop-handle-hit ch-tm" data-dir="tm"></div>
+            <div class="crop-handle-hit ch-bm" data-dir="bm"></div>
+          </div>
+        </div>
+      </div>
+      <p class="text-center text-xs text-on-surface-variant mt-2">Drag to reposition · Drag handles to resize</p>
+    </section>
+
+    <!-- Crop values -->
+    <section id="crop-values-section" class="hidden">
+      <p class="label uppercase mb-2">Crop Region (px)</p>
+      <div class="grid grid-cols-4 gap-2">
+        <div><p class="label mb-1">X</p><input id="crop-x" type="text" inputmode="numeric" class="input-field text-center" value="0" oninput="cropValuesChanged()"/></div>
+        <div><p class="label mb-1">Y</p><input id="crop-y" type="text" inputmode="numeric" class="input-field text-center" value="0" oninput="cropValuesChanged()"/></div>
+        <div><p class="label mb-1">Width</p><input id="crop-w" type="text" inputmode="numeric" class="input-field text-center" value="1920" oninput="cropValuesChanged()"/></div>
+        <div><p class="label mb-1">Height</p><input id="crop-h" type="text" inputmode="numeric" class="input-field text-center" value="1080" oninput="cropValuesChanged()"/></div>
+      </div>
+      <div class="mt-3">
+        <p class="label uppercase mb-1">Scale After Crop</p>
+        <div class="relative">
+          <select id="crop-scale" class="select-field pr-8 text-sm" onchange="cropUpdate()">
+            <option value="">No scale</option>
+            <option value="1920:1080">1080p</option>
+            <option value="1280:720">720p</option>
+            <option value="854:480">480p</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Output (hidden – auto-generated) -->
+    <section id="crop-output-section" class="hidden">
+      <input id="crop-output" class="input-field flex-1" placeholder="/path/to/output.mp4"/>
+    </section>
+
+    <!-- Command preview -->
+    <section id="crop-cmd-section" class="hidden">
+      <p class="label uppercase mb-1">FFmpeg Command</p>
+      <div id="crop-cmd" class="code-block text-xs">ffmpeg ...</div>
+    </section>
+
+    <button id="crop-start-btn" onclick="startCrop()" class="btn-primary h-14 text-base font-semibold w-full hidden">
+      <span class="material-symbols-outlined fill-icon">crop</span>
+      Apply Crop
+    </button>
+  </div>
+
+  <!-- ─────────────── QUEUE ───────────────────────────────────────── -->
+  <div id="view-queue" class="view p-4 gap-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-primary">Queue</h2>
+      <button onclick="clearCompleted()" class="text-xs text-primary">Clear Done</button>
+    </div>
+
+    <!-- Tool filter -->
+    <div class="flex gap-2 flex-wrap">
+      <button onclick="setQueueFilter('all')"         id="qf-all"          class="qf-btn op-pill op-pill-sm active">All</button>
+      <button onclick="setQueueFilter('ffmpeg')"      id="qf-ffmpeg"       class="qf-btn op-pill op-pill-sm">ffmpeg</button>
+      <button onclick="setQueueFilter('imagemagick')" id="qf-imagemagick"  class="qf-btn op-pill op-pill-sm">ImageMagick</button>
+      <button onclick="setQueueFilter('yt-dlp')"      id="qf-yt-dlp"       class="qf-btn op-pill op-pill-sm">yt-dlp</button>
+    </div>
+
+    <!-- System mini-status -->
+    <div id="queue-sys" class="card-low p-3 grid grid-cols-4 gap-2 text-center text-xs">
+      <div><p class="text-on-surface-variant">CPU</p><p id="q-cpu" class="font-mono text-primary font-semibold">--%</p></div>
+      <div><p class="text-on-surface-variant">RAM</p><p id="q-mem" class="font-mono text-secondary font-semibold">--%</p></div>
+      <div><p class="text-on-surface-variant">Temp</p><p id="q-temp" class="font-mono text-on-surface">--</p></div>
+      <div><p class="text-on-surface-variant">Active</p><p id="q-active" class="font-mono text-on-surface font-semibold">0</p></div>
+    </div>
+
+    <div id="queue-list" class="space-y-3">
+      <p class="text-sm text-on-surface-variant text-center py-8">No jobs yet. Start a conversion, trim, or crop!</p>
+    </div>
+  </div>
+
+  <!-- ─────────────── FILES ─────────────────────────────────────────── -->
+  <div id="view-files" class="view p-4 gap-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-primary">Files</h2>
+      <button onclick="refreshAllFiles()" class="text-xs text-on-surface-variant flex items-center gap-1 hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined text-base">refresh</span>Refresh
+      </button>
+    </div>
+
+    <!-- Drop zone -->
+    <div id="upload-zone" class="upload-zone" onclick="document.getElementById('upload-input').click()"
+         ondragover="e=>{ e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }"
+         ondragleave="document.getElementById('upload-zone').classList.remove('drag-over')"
+         ondrop="handleDrop(event)">
+      <input id="upload-input" type="file" accept="video/*,audio/*,image/*" multiple class="hidden" onchange="handleFileSelect(event)"/>
+      <span class="material-symbols-outlined text-4xl text-on-surface-variant block mb-2">cloud_upload</span>
+      <p class="text-sm font-medium text-on-surface">Click or drag & drop files here</p>
+      <p class="text-xs text-on-surface-variant mt-1">MP4, MKV, MOV, AVI, WebM, etc.</p>
+    </div>
+
+    <!-- Upload progress list -->
+    <div id="upload-progress-list" class="space-y-2"></div>
+
+    <!-- Job output files -->
+    <div>
+      <p class="label uppercase mb-2">Job Outputs</p>
+      <div id="output-file-list" class="space-y-2">
+        <p class="text-sm text-on-surface-variant text-center py-2">No completed jobs yet</p>
+      </div>
+    </div>
+
+    <!-- Uploaded files -->
+    <div>
+      <p class="label uppercase mb-2">Uploaded Files</p>
+      <div id="upload-file-list" class="space-y-2">
+        <p class="text-sm text-on-surface-variant text-center py-4">No uploaded files</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── IMAGE ────────────────────────────────────────── -->
+  <div id="view-image" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Image Processing</h2>
+    <div id="image-install-banner" class="hidden card p-4 space-y-3" style="border-color:var(--c-error)">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-error text-2xl">warning</span>
+        <div>
+          <p class="text-sm font-semibold text-error">ImageMagick が必要です</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">この機能を使うには ImageMagick をインストールしてください</p>
+        </div>
+      </div>
+      <div id="image-install-cmd" class="code-block text-xs"></div>
+      <button onclick="toggleAltInstall('image')" class="text-xs text-primary underline">他の環境のインストール方法</button>
+      <div id="image-install-alt" class="hidden code-block text-xs space-y-1">
+        <div># Fedora / RHEL</div>
+        <div>sudo dnf install imagemagick</div>
+        <div style="margin-top:8px"># Debian / Ubuntu</div>
+        <div>sudo apt install imagemagick</div>
+        <div style="margin-top:8px"># macOS (Homebrew)</div>
+        <div>brew install imagemagick</div>
+      </div>
+    </div>
+
+    <div id="image-features" class="contents">
+      <!-- Operation selector -->
+      <section>
+        <p class="label uppercase mb-2">Operation</p>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="setImageOp('resize')"   id="imgop-resize"   class="imgop-btn op-pill active">Resize</button>
+          <button onclick="setImageOp('convert')"  id="imgop-convert"  class="imgop-btn op-pill">Convert</button>
+          <button onclick="setImageOp('compress')" id="imgop-compress" class="imgop-btn op-pill">Compress</button>
+          <button onclick="setImageOp('crop')"     id="imgop-crop"     class="imgop-btn op-pill">Crop</button>
+        </div>
+      </section>
+
+      <!-- Input -->
+      <section>
+        <p class="label uppercase mb-1">Input</p>
+        <div id="img-input-display" onclick="openFilePicker('img-input','image',imgFilesChanged,true)"
+             class="card-low rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-surface-container-highest transition-colors select-none">
+          <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0">image</span>
+          <span id="img-input-name" class="text-sm text-on-surface-variant flex-1 truncate">選択なし</span>
+          <span class="material-symbols-outlined text-on-surface-variant text-base flex-shrink-0">chevron_right</span>
+        </div>
+        <input id="img-input" type="hidden"/>
+      </section>
+
+      <!-- Op-specific params -->
+      <section id="img-params-resize" class="card-low p-4 space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <p class="label uppercase mb-1">Width (px)</p>
+            <input id="img-resize-w" type="text" inputmode="numeric" class="input-field" placeholder="1920" oninput="imgUpdate()"/>
+          </div>
+          <div>
+            <p class="label uppercase mb-1">Height (px)</p>
+            <input id="img-resize-h" type="text" inputmode="numeric" class="input-field" placeholder="1080" oninput="imgUpdate()"/>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-on-surface">アスペクト比を維持（縮小のみ）</p>
+          <div class="toggle on" id="tog-img-aspect" onclick="toggleEl('tog-img-aspect'); imgUpdate()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="img-params-convert" class="hidden card-low p-4 space-y-3">
+        <div>
+          <p class="label uppercase mb-1">出力フォーマット</p>
+          <select id="img-conv-fmt" class="select-field" onchange="imgUpdate()">
+            <option value="jpg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+            <option value="gif">GIF</option>
+            <option value="bmp">BMP</option>
+            <option value="tiff">TIFF</option>
+          </select>
+        </div>
+        <div>
+          <p class="label uppercase mb-1">Quality (JPEG/WebP)</p>
+          <input id="img-conv-quality" type="range" min="1" max="100" value="85" class="w-full" oninput="document.getElementById('img-conv-qval').textContent=this.value; imgUpdate()" style="background:linear-gradient(to right,var(--c-primary) 85%,var(--c-surface-highest) 85%)"/>
+          <div class="flex justify-between text-xs text-on-surface-variant mt-1">
+            <span>1 (lowest)</span><span id="img-conv-qval" class="text-primary font-mono">85</span><span>100 (best)</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-on-surface">メタデータを削除 (strip)</p>
+          <div class="toggle off" id="tog-img-strip" onclick="toggleEl('tog-img-strip'); imgUpdate()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="img-params-compress" class="hidden card-low p-4 space-y-3">
+        <div>
+          <p class="label uppercase mb-1">Quality</p>
+          <input id="img-comp-quality" type="range" min="1" max="100" value="75" class="w-full" oninput="document.getElementById('img-comp-qval').textContent=this.value; imgUpdate()" style="background:linear-gradient(to right,var(--c-primary) 75%,var(--c-surface-highest) 75%)"/>
+          <div class="flex justify-between text-xs text-on-surface-variant mt-1">
+            <span>1 (smallest)</span><span id="img-comp-qval" class="text-primary font-mono">75</span><span>100 (best)</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-on-surface">メタデータを削除 (strip)</p>
+          <div class="toggle on" id="tog-img-comp-strip" onclick="toggleEl('tog-img-comp-strip'); imgUpdate()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="img-params-crop" class="hidden card-low p-4 space-y-3">
+        <div>
+          <p class="label uppercase mb-2">Aspect Ratio</p>
+          <div class="flex gap-2 flex-wrap">
+            <button onclick="setImgCropAspect(16,9)"  data-ar="16:9"  class="imgaspect-btn op-pill op-pill-sm">16:9</button>
+            <button onclick="setImgCropAspect(9,16)"  data-ar="9:16"  class="imgaspect-btn op-pill op-pill-sm">9:16</button>
+            <button onclick="setImgCropAspect(1,1)"   data-ar="1:1"   class="imgaspect-btn op-pill op-pill-sm">1:1</button>
+            <button onclick="setImgCropAspect(4,3)"   data-ar="4:3"   class="imgaspect-btn op-pill op-pill-sm">4:3</button>
+            <button onclick="setImgCropAspect(0,0)"   data-ar="free"  class="imgaspect-btn op-pill op-pill-sm active">Free</button>
+          </div>
+        </div>
+        <div id="img-crop-canvas-section" class="hidden">
+          <div class="flex justify-center">
+            <div class="crop-canvas-wrap" id="img-crop-wrap">
+              <img id="img-crop-thumb" alt="Preview"/>
+              <div class="crop-ov" id="img-ov-top"></div>
+              <div class="crop-ov" id="img-ov-bottom"></div>
+              <div class="crop-ov" id="img-ov-left"></div>
+              <div class="crop-ov" id="img-ov-right"></div>
+              <div class="crop-box">
+                <div class="crop-handle-hit ch-tl" data-dir="tl"></div>
+                <div class="crop-handle-hit ch-tr" data-dir="tr"></div>
+                <div class="crop-handle-hit ch-bl" data-dir="bl"></div>
+                <div class="crop-handle-hit ch-br" data-dir="br"></div>
+                <div class="crop-handle-hit ch-ml" data-dir="ml"></div>
+                <div class="crop-handle-hit ch-mr" data-dir="mr"></div>
+                <div class="crop-handle-hit ch-tm" data-dir="tm"></div>
+                <div class="crop-handle-hit ch-bm" data-dir="bm"></div>
+              </div>
+            </div>
+          </div>
+          <p class="text-center text-xs text-on-surface-variant mt-2">Drag to reposition · Drag handles to resize</p>
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+          <div><p class="label mb-1">X</p><input id="img-crop-x" type="text" inputmode="numeric" class="input-field text-center" value="0" oninput="imgCropValuesChanged()"/></div>
+          <div><p class="label mb-1">Y</p><input id="img-crop-y" type="text" inputmode="numeric" class="input-field text-center" value="0" oninput="imgCropValuesChanged()"/></div>
+          <div><p class="label mb-1">Width</p><input id="img-crop-w" type="text" inputmode="numeric" class="input-field text-center" value="" oninput="imgCropValuesChanged()"/></div>
+          <div><p class="label mb-1">Height</p><input id="img-crop-h" type="text" inputmode="numeric" class="input-field text-center" value="" oninput="imgCropValuesChanged()"/></div>
+        </div>
+      </section>
+
+      <!-- Output (hidden – auto-generated) -->
+      <section id="img-output-section" class="hidden">
+        <input id="img-output" class="input-field flex-1"/>
+        <input id="img-output-dir" class="input-field flex-1"/>
+      </section>
+
+      <!-- Command preview -->
+      <section>
+        <p class="label uppercase mb-1">Command</p>
+        <div id="img-cmd" class="code-block text-xs">convert ...</div>
+      </section>
+
+      <button onclick="startImageJob()" class="btn-primary h-14 text-base font-semibold w-full">
+        <span class="material-symbols-outlined fill-icon">image</span>
+        <span id="img-start-label">Start</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────── DOWNLOAD ──────────────────────────────────────── -->
+  <div id="view-download" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Download</h2>
+    <div id="download-install-banner" class="hidden card p-4 space-y-3" style="border-color:var(--c-error)">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-error text-2xl">warning</span>
+        <div>
+          <p class="text-sm font-semibold text-error">yt-dlp が必要です</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">この機能を使うには yt-dlp をインストールしてください</p>
+        </div>
+      </div>
+      <div id="download-install-cmd" class="code-block text-xs"></div>
+      <button onclick="toggleAltInstall('download')" class="text-xs text-primary underline">他の環境のインストール方法</button>
+      <div id="download-install-alt" class="hidden code-block text-xs space-y-1">
+        <div># Fedora / RHEL</div>
+        <div>sudo dnf install yt-dlp</div>
+        <div style="margin-top:8px"># Debian / Ubuntu</div>
+        <div>sudo apt install yt-dlp</div>
+        <div style="margin-top:8px"># macOS (Homebrew)</div>
+        <div>brew install yt-dlp</div>
+        <div style="margin-top:8px"># pip (any OS)</div>
+        <div>pip install yt-dlp</div>
+      </div>
+    </div>
+
+    <div id="download-features" class="contents">
+      <!-- URL -->
+      <section>
+        <p class="label uppercase mb-1">URL</p>
+        <input id="dl-url" class="input-field" placeholder="https://www.youtube.com/watch?v=..." oninput="dlUrlChanged()"/>
+      </section>
+
+      <!-- Video preview (auto on URL input) -->
+      <div id="dl-preview" class="hidden card-low overflow-hidden rounded-xl">
+        <img id="dl-preview-thumb" class="w-full object-cover" style="max-height:160px" src="" alt=""/>
+        <div class="p-3 space-y-1">
+          <p id="dl-preview-title" class="text-sm font-semibold text-on-surface leading-snug"></p>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span id="dl-preview-uploader" class="text-xs text-on-surface-variant"></span>
+            <span id="dl-preview-duration" class="text-xs font-mono text-primary"></span>
+            <span id="dl-preview-playlist" class="hidden chip" style="background:var(--c-secondary-cont);color:var(--c-on-secondary-cont)">playlist</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Format / Quality -->
+      <section class="space-y-3">
+        <div class="flex items-center justify-between">
+          <p class="label uppercase">Format</p>
+          <div id="dl-fetch-status" class="flex items-center gap-1.5 text-xs text-on-surface-variant"></div>
+        </div>
+
+        <!-- Filter dropdowns (populated dynamically after URL fetch) -->
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <p class="label uppercase mb-1" style="font-size:10px">解像度</p>
+            <select id="dl-filter-res" class="select-field" style="padding:7px 10px;font-size:12px" onchange="_applyFormatFilters()">
+              <option value="">すべて</option>
+            </select>
+          </div>
+          <div>
+            <p class="label uppercase mb-1" style="font-size:10px">拡張子</p>
+            <select id="dl-filter-ext" class="select-field" style="padding:7px 10px;font-size:12px" onchange="_applyFormatFilters()">
+              <option value="">すべて</option>
+            </select>
+          </div>
+          <div>
+            <p class="label uppercase mb-1" style="font-size:10px">種別</p>
+            <select id="dl-filter-type" class="select-field" style="padding:7px 10px;font-size:12px" onchange="_applyFormatFilters()">
+              <option value="">すべて</option>
+              <option value="video">映像あり</option>
+              <option value="audio">音声のみ</option>
+            </select>
+          </div>
+        </div>
+        <select id="dl-quality" class="hidden"><option value="best">best</option></select>
+        <select id="dl-audio-fmt" class="hidden"><option value="mp3">mp3</option></select>
+
+        <!-- Format cards (dynamically populated by resolution) -->
+        <div id="dl-format-groups" class="hidden space-y-4"></div>
+
+        <!-- Selected format badge -->
+        <div id="dl-fmt-badge" class="hidden items-center gap-2 p-2.5 rounded-xl"
+             style="background:var(--c-success-bg);border:1px solid var(--c-success-bd)">
+          <span class="material-symbols-outlined text-sm fill-icon" style="color:var(--c-success)">check_circle</span>
+          <span class="text-xs font-medium" style="color:var(--c-success)">選択中:</span>
+          <span id="dl-fmt-badge-id" class="text-xs font-mono" style="color:var(--c-success)"></span>
+          <button onclick="clearFormatId()" class="ml-auto text-xs underline" style="color:var(--c-success)">クリア</button>
+        </div>
+
+        <input id="dl-format-id" type="hidden" value=""/>
+      </section>
+
+      <!-- Options -->
+      <section class="space-y-1">
+        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container transition-colors">
+          <div>
+            <p class="text-sm text-on-surface">字幕をダウンロード</p>
+            <p class="text-xs text-on-surface-variant">--write-subs --write-auto-subs</p>
+          </div>
+          <div class="toggle off" id="tog-dl-subs" onclick="toggleEl('tog-dl-subs'); dlUpdate()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container transition-colors">
+          <div>
+            <p class="text-sm text-on-surface">プレイリスト全体</p>
+            <p class="text-xs text-on-surface-variant">デフォルトは最初の1件のみ</p>
+          </div>
+          <div class="toggle off" id="tog-dl-playlist" onclick="toggleEl('tog-dl-playlist'); dlUpdate()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Output dir (hidden – auto-set to downloads dir) -->
+      <section class="hidden">
+        <input id="dl-outdir" class="input-field flex-1"/>
+      </section>
+
+      <!-- Cookies -->
+      <section>
+        <div class="flex items-center justify-between mb-1">
+          <p class="label uppercase">Cookie ファイル (任意)</p>
+          <span class="text-xs text-on-surface-variant">認証が必要なサイト向け</span>
+        </div>
+        <div class="flex gap-2">
+          <input id="dl-cookies" class="input-field flex-1 text-sm" placeholder="/path/to/cookies.txt" oninput="dlUpdate()"/>
+          <button onclick="openBrowser('dl-cookies', false, dlUpdate)" class="btn-secondary px-3 h-10">
+            <span class="material-symbols-outlined text-base">folder_open</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Command preview -->
+      <section>
+        <p class="label uppercase mb-1">Command</p>
+        <div id="dl-cmd" class="code-block text-xs">yt-dlp ...</div>
+      </section>
+
+      <button onclick="startDownload()" class="btn-primary h-14 text-base font-semibold w-full">
+        <span class="material-symbols-outlined fill-icon">download</span>
+        Start Download
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────── SETTINGS ────────────────────────────────────── -->
+  <div id="view-settings" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Settings</h2>
+    <div class="card-low p-4">
+      <p class="label uppercase mb-3">テーマ</p>
+      <div class="flex gap-2">
+        <button id="theme-btn-system" onclick="setTheme('system')" class="btn-secondary flex-1 h-10 text-sm gap-1">
+          <span class="material-symbols-outlined text-base">brightness_auto</span>
+          システム
+        </button>
+        <button id="theme-btn-light" onclick="setTheme('light')" class="btn-secondary flex-1 h-10 text-sm gap-1">
+          <span class="material-symbols-outlined text-base">light_mode</span>
+          ライト
+        </button>
+        <button id="theme-btn-dark" onclick="setTheme('dark')" class="btn-secondary flex-1 h-10 text-sm gap-1">
+          <span class="material-symbols-outlined text-base">dark_mode</span>
+          ダーク
+        </button>
+      </div>
+    </div>
+    <div class="card-low p-4 space-y-2">
+      <p class="text-sm text-on-surface-variant">MediaForge v2.0 · Running on Linux</p>
+      <div id="tool-status-list" class="space-y-1 mt-2"></div>
+    </div>
+    <div class="card-low p-4">
+      <p class="label uppercase mb-1 text-on-surface-variant">出力先</p>
+      <p id="settings-outdir-info" class="text-sm text-on-surface font-mono"></p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════ BOTTOM NAV -->
+<nav class="lg:hidden fixed bottom-0 w-full z-50 bg-surface-container border-t border-outline-variant flex justify-around items-center h-16 px-1">
+  <div class="nav-item active" id="nav-dashboard" onclick="showView('dashboard')">
+    <span class="material-symbols-outlined fill-icon">dashboard</span>
+    <span style="font-size:10px;margin-top:2px">Home</span>
+  </div>
+  <div class="nav-item" id="nav-convert" onclick="showView('convert')">
+    <span class="material-symbols-outlined">sync</span>
+    <span style="font-size:10px;margin-top:2px">Video</span>
+  </div>
+  <div class="nav-item" id="nav-image" onclick="showView('image')">
+    <span class="material-symbols-outlined">image</span>
+    <span style="font-size:10px;margin-top:2px">Image</span>
+  </div>
+  <div class="nav-item" id="nav-download" onclick="showView('download')">
+    <span class="material-symbols-outlined">download</span>
+    <span style="font-size:10px;margin-top:2px">Download</span>
+  </div>
+  <div class="nav-item" id="nav-files" onclick="showView('files')">
+    <span class="material-symbols-outlined">folder</span>
+    <span style="font-size:10px;margin-top:2px">Files</span>
+  </div>
+  <div class="nav-item" id="nav-queue" onclick="showView('queue')">
+    <span class="material-symbols-outlined">queue</span>
+    <span style="font-size:10px;margin-top:2px">Queue</span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ FILE BROWSER MODAL -->
+<div id="browser-modal" class="modal-overlay hidden" onclick="closeBrowserIfOutside(event)">
+  <div class="modal-box">
+    <div class="flex items-center justify-between p-4 border-b border-outline-variant">
+      <div>
+        <p class="text-sm font-semibold text-on-surface">Select File</p>
+        <p id="browser-path-display" class="text-xs text-on-surface-variant font-mono mt-0.5 truncate max-w-xs">...</p>
+      </div>
+      <button onclick="closeBrowser()" class="text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div id="browser-list" class="overflow-y-auto flex-1 p-2"></div>
+    <div class="p-3 border-t border-outline-variant flex gap-2">
+      <input id="browser-manual" class="input-field flex-1 text-sm" placeholder="or type path manually..."/>
+      <button onclick="browserConfirmManual()" class="btn-primary px-4 h-9 text-sm">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ JOB LOG MODAL -->
+<div id="log-modal" class="modal-overlay hidden" onclick="closeLogIfOutside(event)">
+  <div class="modal-box">
+    <div class="flex items-center justify-between p-4 border-b border-outline-variant">
+      <p class="text-sm font-semibold text-on-surface" id="log-modal-title">Job Log</p>
+      <button onclick="closeLog()" class="text-on-surface-variant hover:text-on-surface">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-4 space-y-3 overflow-y-auto flex-1">
+      <div id="log-cmd" class="code-block text-xs"></div>
+      <div id="log-content" class="log-area"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════ State
+const state = {
+  currentView: 'dashboard',
+  qualityMode: 'crf',
+  browser: { targetField: null, dirMode: false, callback: null, currentPath: null },
+  trim: { duration: 0, startSec: 0, endSec: 0, dragging: null },
+  crop: { vidW: 0, vidH: 0, previewW: 0, previewH: 0, box: { x: 0, y: 0, w: 100, h: 100 }, aspect: 0, dragging: null, startMouse: null, startBox: null },
+  imgcrop: { imgW: 0, imgH: 0, previewW: 0, previewH: 0, box: { x: 0, y: 0, w: 100, h: 100 }, aspect: 0 },
+  convFiles: [], trimFiles: [], cropFiles: [], imgFiles: [],
+};
+
+// ══════════════════════════════════════════════════════════════════ Navigation
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(n => n.classList.remove('active'));
+  // Video op pills: active on convert/trim/crop, hidden on others
+  const videoViews = new Set(['convert', 'trim', 'crop']);
+  document.querySelectorAll('.vidop-pill').forEach(p => p.classList.toggle('active', p.dataset.vidop === name));
+  // Bottom nav + sidebar highlight 'convert' for all video sub-views
+  const navName = videoViews.has(name) ? 'convert' : name;
+  const view = document.getElementById('view-' + name);
+  const nav = document.getElementById('nav-' + navName);
+  const snav = document.getElementById('snav-' + navName);
+  if (view) view.classList.add('active');
+  if (nav) nav.classList.add('active');
+  if (snav) snav.classList.add('active');
+  state.currentView = name;
+}
+
+// ══════════════════════════════════════════════════════════════════ System stats
+async function refreshStats() {
+  try {
+    const r = await fetch('/api/system');
+    if (!r.ok) return;
+    const d = await r.json();
+    const cpu = d.cpu_percent;
+    const mem = d.memory_percent;
+    const temp = d.temperature ? d.temperature + '°C' : '--';
+
+    document.getElementById('sys-cpu').textContent = 'CPU ' + cpu + '%';
+    document.getElementById('sys-temp').textContent = temp;
+
+    document.getElementById('dash-cpu').textContent = cpu + '%';
+    document.getElementById('dash-cpu-bar').style.width = cpu + '%';
+    document.getElementById('dash-mem').textContent = mem + '%';
+    document.getElementById('dash-mem-bar').style.width = mem + '%';
+    document.getElementById('dash-jobs').textContent = d.active_jobs;
+    document.getElementById('dash-temp').textContent = temp;
+
+    document.getElementById('q-cpu').textContent = cpu + '%';
+    document.getElementById('q-mem').textContent = mem + '%';
+    document.getElementById('q-temp').textContent = temp;
+    document.getElementById('q-active').textContent = d.active_jobs;
+
+    document.getElementById('snav-cpu').textContent = cpu + '%';
+    document.getElementById('snav-cpu-bar').style.width = cpu + '%';
+    document.getElementById('snav-mem').textContent = mem + '%';
+    document.getElementById('snav-mem-bar').style.width = mem + '%';
+    document.getElementById('snav-temp').textContent = temp;
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════════════ File browser
+function openBrowser(fieldId, dirMode = false, callback = null) {
+  state.browser.targetField = fieldId;
+  state.browser.dirMode = dirMode;
+  state.browser.callback = callback;
+  const currentVal = document.getElementById(fieldId)?.value || '';
+  const startPath = currentVal ? (() => { try { return currentVal.includes('/') ? currentVal.split('/').slice(0, -1).join('/') || '/' : currentVal; } catch(e) { return '/home'; }})() : '/home';
+  document.getElementById('browser-manual').value = '';
+  document.getElementById('browser-modal').classList.remove('hidden');
+  browserNavigate(startPath);
+}
+
+async function browserNavigate(path) {
+  state.browser.currentPath = path;
+  document.getElementById('browser-path-display').textContent = path;
+  document.getElementById('browser-manual').value = '';
+  const list = document.getElementById('browser-list');
+  list.innerHTML = '<p class="text-xs text-on-surface-variant p-4">Loading...</p>';
+  try {
+    const r = await fetch('/api/browse?path=' + encodeURIComponent(path));
+    const d = await r.json();
+    list.innerHTML = '';
+
+    if (d.parent) {
+      const up = document.createElement('div');
+      up.className = 'file-row';
+      up.innerHTML = '<span class="material-symbols-outlined text-on-surface-variant text-lg">arrow_upward</span><span class="text-sm text-on-surface-variant">..</span>';
+      up.onclick = () => browserNavigate(d.parent);
+      list.appendChild(up);
+    }
+
+    if (state.browser.dirMode) {
+      const selHere = document.createElement('div');
+      selHere.className = 'file-row';
+      selHere.style.background = 'var(--c-secondary-cont)';
+      selHere.innerHTML = '<span class="material-symbols-outlined text-secondary text-lg">check_circle</span><span class="text-sm text-secondary font-medium">Select this directory</span>';
+      selHere.onclick = () => { browserSelect(path + '/'); };
+      list.appendChild(selHere);
+    }
+
+    for (const entry of d.entries) {
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      const icon = entry.is_dir ? 'folder' : (entry.is_video ? 'movie' : 'description');
+      const iconColor = entry.is_dir ? 'text-secondary' : (entry.is_video ? 'text-primary' : 'text-on-surface-variant');
+      const size = entry.size != null ? formatSize(entry.size) : '';
+      row.innerHTML = `<span class="material-symbols-outlined ${iconColor} text-lg">${icon}</span><span class="text-sm text-on-surface flex-1 truncate">${entry.name}</span><span class="text-xs text-on-surface-variant">${size}</span>`;
+      if (entry.is_dir) {
+        row.onclick = () => browserNavigate(entry.path);
+      } else {
+        row.ondblclick = () => browserSelect(entry.path);
+        row.onclick = () => { document.getElementById('browser-manual').value = entry.path; };
+      }
+      list.appendChild(row);
+    }
+  } catch(e) {
+    list.innerHTML = '<p class="text-xs text-error p-4">Error: ' + e.message + '</p>';
+  }
+}
+
+function browserSelect(path) {
+  const field = document.getElementById(state.browser.targetField);
+  if (field) field.value = path;
+  closeBrowser();
+  if (state.browser.callback) state.browser.callback();
+}
+
+function browserConfirmManual() {
+  const val = document.getElementById('browser-manual').value.trim();
+  if (val) browserSelect(val);
+}
+
+function closeBrowser() {
+  document.getElementById('browser-modal').classList.add('hidden');
+}
+
+function closeBrowserIfOutside(e) {
+  if (e.target === document.getElementById('browser-modal')) closeBrowser();
+}
+
+// ══════════════════════════════════════════════════════════════════ Conversion
+function convContainerChanged() {
+  const cont = document.getElementById('conv-container').value;
+  const vcSel = document.getElementById('conv-vcodec');
+  // Suggest defaults
+  if (cont === 'webm') {
+    vcSel.value = 'libvpx-vp9';
+    document.getElementById('conv-acodec').value = 'libopus';
+  } else if (cont === 'mkv') {
+    // keep as is
+  } else {
+    if (vcSel.value === 'libvpx-vp9') vcSel.value = 'libx264';
+    if (document.getElementById('conv-acodec').value === 'libopus') document.getElementById('conv-acodec').value = 'aac';
+  }
+  convUpdate();
+}
+
+function setQualityMode(mode) {
+  state.qualityMode = mode;
+  document.getElementById('crf-control').classList.toggle('hidden', mode !== 'crf');
+  document.getElementById('bitrate-control').classList.toggle('hidden', mode !== 'bitrate');
+  document.getElementById('qmode-crf').style.background = mode === 'crf' ? 'var(--c-secondary-cont)' : '';
+  document.getElementById('qmode-bitrate').style.background = mode === 'bitrate' ? 'var(--c-secondary-cont)' : '';
+  convUpdate();
+}
+
+function crfChanged(el) {
+  const v = el.value;
+  document.getElementById('crf-val').textContent = v;
+  const pct = (v / 51) * 100;
+  el.style.background = `linear-gradient(to right, var(--c-primary) ${pct}%, var(--c-surface-highest) ${pct}%)`;
+  convUpdate();
+}
+
+function toggleEl(id) {
+  const el = document.getElementById(id);
+  const isOn = el.classList.contains('on');
+  el.classList.toggle('on', !isOn);
+  el.classList.toggle('off', isOn);
+  if (id === 'tog-hw') {
+    document.getElementById('hw-select-wrap').classList.toggle('hidden', isOn);
+  }
+}
+
+async function convInputChanged() {
+  const path = document.getElementById('conv-input').value.trim();
+  if (!path) return;
+  // Auto-suggest output
+  autoSuggestOutput('conv-input', 'conv-output');
+  convUpdate();
+  // Probe
+  try {
+    const r = await fetch('/api/probe?path=' + encodeURIComponent(path));
+    if (r.ok) {
+      const info = await r.json();
+      const fmt = info.format || {};
+      const vstream = (info.streams || []).find(s => s.codec_type === 'video');
+      const astream = (info.streams || []).find(s => s.codec_type === 'audio');
+      let txt = '';
+      if (vstream) txt += `${vstream.codec_name} ${vstream.width}x${vstream.height} ${parseFloat(eval(vstream.r_frame_rate||'0')).toFixed(2)}fps`;
+      if (astream) txt += (txt ? '  ·  ' : '') + `${astream.codec_name} ${astream.sample_rate}Hz`;
+      if (fmt.size) txt += '  ·  ' + formatSize(parseInt(fmt.size));
+      if (fmt.duration) txt += '  ·  ' + fmtTime(parseFloat(fmt.duration));
+      const div = document.getElementById('conv-info');
+      div.textContent = txt;
+      div.classList.remove('hidden');
+    }
+  } catch(e) {}
+}
+
+function convUpdate() {
+  const inp = document.getElementById('conv-input').value.trim() || 'input.mp4';
+  const out = document.getElementById('conv-output').value.trim() || 'output.mp4';
+  const vcodec = document.getElementById('conv-vcodec').value;
+  const acodec = document.getElementById('conv-acodec').value;
+  const res = document.getElementById('conv-res').value;
+  const hwOn = document.getElementById('tog-hw').classList.contains('on');
+  const hw = hwOn ? document.getElementById('conv-hw').value : '';
+
+  let cmd = 'ffmpeg -y';
+  if (hw) cmd += ` -hwaccel ${hw}`;
+  cmd += ` -i "${inp}"`;
+  if (vcodec !== 'copy') {
+    cmd += ` -c:v ${vcodec}`;
+    if (state.qualityMode === 'crf') {
+      cmd += ` -crf ${document.getElementById('conv-crf').value}`;
+    } else {
+      const br = document.getElementById('conv-bitrate').value || '5M';
+      cmd += ` -b:v ${br}`;
+    }
+    if (res) cmd += ` -vf "scale=${res}:-2"`;
+  } else {
+    cmd += ' -c:v copy';
+  }
+  if (acodec !== 'copy') {
+    cmd += ` -c:a ${acodec} -b:a 128k`;
+  } else {
+    cmd += ' -c:a copy';
+  }
+  cmd += ` "${out}"`;
+  document.getElementById('conv-cmd').textContent = cmd;
+}
+
+async function startConvert() {
+  const files = state.convFiles;
+  if (!files.length) { alert('Input path is required'); return; }
+  const vcodec = document.getElementById('conv-vcodec').value;
+  const acodec = document.getElementById('conv-acodec').value;
+  const res = document.getElementById('conv-res').value;
+  const hwOn = document.getElementById('tog-hw').classList.contains('on');
+  const params = {
+    vcodec, acodec,
+    resolution: res,
+    hwaccel: hwOn ? document.getElementById('conv-hw').value : '',
+  };
+  if (state.qualityMode === 'crf') {
+    params.crf = parseInt(document.getElementById('conv-crf').value);
+  } else {
+    params.bitrate = document.getElementById('conv-bitrate').value || '5M';
+  }
+  if (files.length === 1) {
+    const out = document.getElementById('conv-output').value.trim() ||
+      (capabilities.outputs_dir || '/tmp') + '/' + Date.now() + '.mp4';
+    await createJob('convert', files[0].path, out, params);
+  } else {
+    for (const f of files) {
+      const fname = f.name || f.path.split('/').pop();
+      const dot = fname.lastIndexOf('.');
+      const base = dot >= 0 ? fname.slice(0, dot) : fname;
+      const out = (capabilities.outputs_dir || '/tmp') + '/' + base + '_' + Date.now() + '.mp4';
+      await createJob('convert', f.path, out, params);
+    }
+  }
+  showView('queue');
+}
+
+// ══════════════════════════════════════════════════════════════════ Trim
+async function trimInputChanged() {
+  const path = document.getElementById('trim-input').value.trim();
+  if (!path) return;
+  autoSuggestOutput('trim-input', 'trim-output', '_trim');
+
+  const sections = ['trim-preview-section','trim-timeline-section','trim-points-section','trim-options-section','trim-cmd-section'];
+  sections.forEach(id => document.getElementById(id).classList.remove('hidden'));
+  document.getElementById('trim-start-btn').classList.remove('hidden');
+
+  const video = document.getElementById('trim-video');
+  const playable = ['.mp4','.webm','.ogg','.ogv','.mov'].some(e => path.toLowerCase().endsWith(e));
+  if (playable) {
+    video.src = '/api/media?path=' + encodeURIComponent(path);
+  } else {
+    video.src = '';
+  }
+
+  // Probe duration
+  try {
+    const r = await fetch('/api/probe?path=' + encodeURIComponent(path));
+    if (r.ok) {
+      const info = await r.json();
+      const dur = parseFloat(info.format?.duration || 0);
+      if (dur > 0) {
+        state.trim.duration = dur;
+        state.trim.endSec = dur;
+        document.getElementById('trim-end').value = secsToHMS(dur);
+        document.getElementById('trim-total').textContent = secsToHMS(dur);
+        document.getElementById('trim-selected-dur').textContent = fmtTime(dur) + ' selected';
+        generateWaveform();
+        updateTrimSelection();
+      }
+    }
+  } catch(e) {}
+  trimUpdate();
+}
+
+function trimVideoLoaded() {
+  const video = document.getElementById('trim-video');
+  state.trim.duration = video.duration;
+  state.trim.endSec = video.duration;
+  document.getElementById('trim-end').value = secsToHMS(video.duration);
+  document.getElementById('trim-total').textContent = secsToHMS(video.duration);
+  generateWaveform();
+  updateTrimSelection();
+  trimUpdate();
+}
+
+function trimVideoTimeUpdate() {
+  const video = document.getElementById('trim-video');
+  const t = video.currentTime;
+  document.getElementById('trim-current').textContent = secsToHMS(t);
+  if (state.trim.duration > 0) {
+    const pct = (t / state.trim.duration) * 100;
+    document.getElementById('trim-playhead').style.left = pct + '%';
+  }
+}
+
+function setTrimStart() {
+  const video = document.getElementById('trim-video');
+  state.trim.startSec = video.currentTime;
+  document.getElementById('trim-start').value = secsToHMS(video.currentTime);
+  updateTrimSelection();
+  trimUpdate();
+}
+
+function setTrimEnd() {
+  const video = document.getElementById('trim-video');
+  state.trim.endSec = video.currentTime;
+  document.getElementById('trim-end').value = secsToHMS(video.currentTime);
+  updateTrimSelection();
+  trimUpdate();
+}
+
+function trimUpdate() {
+  const startVal = document.getElementById('trim-start').value;
+  const endVal = document.getElementById('trim-end').value;
+  state.trim.startSec = hmsToSecs(startVal);
+  state.trim.endSec = endVal ? hmsToSecs(endVal) : state.trim.duration;
+  const dur = state.trim.endSec - state.trim.startSec;
+  if (dur > 0) document.getElementById('trim-selected-dur').textContent = fmtTime(dur) + ' selected';
+  updateTrimSelection();
+
+  const inp = document.getElementById('trim-input').value.trim() || 'input.mp4';
+  const out = document.getElementById('trim-output').value.trim() || 'output.mp4';
+  const accurate = document.getElementById('tog-accurate').classList.contains('on');
+  let cmd = `ffmpeg -y`;
+  if (!accurate) {
+    cmd += ` -ss ${startVal || '0'} -i "${inp}"`;
+    if (endVal) cmd += ` -to ${endVal}`;
+    cmd += ` -c copy "${out}"`;
+  } else {
+    cmd += ` -i "${inp}" -ss ${startVal || '0'}`;
+    if (endVal) cmd += ` -to ${endVal}`;
+    cmd += ` -c:v libx264 -c:a copy "${out}"`;
+  }
+  document.getElementById('trim-cmd').textContent = cmd;
+}
+
+function updateTrimSelection() {
+  const dur = state.trim.duration;
+  if (dur <= 0) return;
+  const startPct = (state.trim.startSec / dur) * 100;
+  const endPct   = (state.trim.endSec   / dur) * 100;
+  document.getElementById('trim-selection').style.left  = startPct + '%';
+  document.getElementById('trim-selection').style.width = (endPct - startPct) + '%';
+  document.getElementById('trim-handle-start').style.left = startPct + '%';
+  document.getElementById('trim-handle-end').style.left   = endPct   + '%';
+}
+
+function generateWaveform() {
+  const container = document.getElementById('trim-waveform');
+  container.innerHTML = '';
+  const bars = 80;
+  for (let i = 0; i < bars; i++) {
+    const bar = document.createElement('span');
+    bar.className = 'waveform-bar';
+    const h = 10 + Math.random() * 90;
+    bar.style.height = h + '%';
+    container.appendChild(bar);
+  }
+}
+
+// Trim timeline dragging — mouse + touch
+(function() {
+  const timeline = document.getElementById('trim-timeline');
+  let dragging = null;
+
+  function clientX(e) {
+    return e.touches ? e.touches[0].clientX : e.clientX;
+  }
+  function getTimelineX(e) {
+    const rect = timeline.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (clientX(e) - rect.left) / rect.width));
+  }
+  function beginDrag(type, e) {
+    dragging = type;
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    if (e.cancelable) e.preventDefault();
+    const pct = getTimelineX(e);
+    const t = pct * state.trim.duration;
+    if (dragging === 'start') {
+      state.trim.startSec = Math.min(t, state.trim.endSec - 0.1);
+      document.getElementById('trim-start').value = secsToHMS(state.trim.startSec);
+    } else if (dragging === 'end') {
+      state.trim.endSec = Math.max(t, state.trim.startSec + 0.1);
+      document.getElementById('trim-end').value = secsToHMS(state.trim.endSec);
+    }
+    updateTrimSelection();
+    trimUpdate();
+  }
+  function endDrag() { dragging = null; }
+
+  const hs = document.getElementById('trim-handle-start');
+  const he = document.getElementById('trim-handle-end');
+  hs.addEventListener('mousedown',  e => beginDrag('start', e));
+  hs.addEventListener('touchstart', e => beginDrag('start', e), { passive: false });
+  he.addEventListener('mousedown',  e => beginDrag('end', e));
+  he.addEventListener('touchstart', e => beginDrag('end', e), { passive: false });
+
+  // Tap on timeline body → seek playhead
+  timeline.addEventListener('mousedown', e => {
+    if (e.target === timeline || e.target.id === 'trim-waveform' || e.target.classList.contains('waveform-bar')) {
+      const pct = getTimelineX(e);
+      const video = document.getElementById('trim-video');
+      if (video.src) video.currentTime = pct * state.trim.duration;
+      document.getElementById('trim-playhead').style.left = (pct * 100) + '%';
+    }
+  });
+
+  document.addEventListener('mousemove',  onMove);
+  document.addEventListener('touchmove',  onMove, { passive: false });
+  document.addEventListener('mouseup',    endDrag);
+  document.addEventListener('touchend',   endDrag);
+})();
+
+async function startTrim() {
+  const files = state.trimFiles;
+  if (!files.length) { alert('Input path is required'); return; }
+  const accurate = document.getElementById('tog-accurate').classList.contains('on');
+  const params = {
+    start: document.getElementById('trim-start').value || '0',
+    end: document.getElementById('trim-end').value,
+    accurate,
+  };
+  if (files.length === 1) {
+    const out = document.getElementById('trim-output').value.trim() ||
+      (capabilities.outputs_dir || '/tmp') + '/' + Date.now() + '_trim.mp4';
+    await createJob('trim', files[0].path, out, params);
+  } else {
+    for (const f of files) {
+      const fname = f.name || f.path.split('/').pop();
+      const dot = fname.lastIndexOf('.');
+      const base = dot >= 0 ? fname.slice(0, dot) : fname;
+      const out = (capabilities.outputs_dir || '/tmp') + '/' + base + '_trim_' + Date.now() + '.mp4';
+      await createJob('trim', f.path, out, params);
+    }
+  }
+  showView('queue');
+}
+
+// ══════════════════════════════════════════════════════════════════ Crop
+async function cropInputChanged() {
+  const path = document.getElementById('crop-input').value.trim();
+  if (!path) return;
+  autoSuggestOutput('crop-input', 'crop-output', '_crop');
+
+  const sections = ['crop-aspect-section','crop-canvas-section','crop-values-section','crop-cmd-section'];
+  sections.forEach(id => document.getElementById(id).classList.remove('hidden'));
+  document.getElementById('crop-start-btn').classList.remove('hidden');
+
+  // Load thumbnail
+  const thumb = document.getElementById('crop-thumb');
+  thumb.src = '/api/thumbnail?path=' + encodeURIComponent(path) + '&t=00:00:02&w=640';
+  thumb.onload = () => {
+    state.crop.previewW = thumb.naturalWidth;
+    state.crop.previewH = thumb.naturalHeight;
+    initCropBox();
+  };
+
+  // Probe video dimensions
+  try {
+    const r = await fetch('/api/probe?path=' + encodeURIComponent(path));
+    if (r.ok) {
+      const info = await r.json();
+      const vs = (info.streams || []).find(s => s.codec_type === 'video');
+      if (vs) {
+        state.crop.vidW = vs.width;
+        state.crop.vidH = vs.height;
+        document.getElementById('crop-w').value = vs.width;
+        document.getElementById('crop-h').value = vs.height;
+        document.getElementById('crop-x').value = 0;
+        document.getElementById('crop-y').value = 0;
+        cropUpdate();
+      }
+    }
+  } catch(e) {}
+}
+
+function initCropBox() {
+  const thumb = document.getElementById('crop-thumb');
+  const pw = thumb.offsetWidth;
+  const ph = thumb.offsetHeight;
+  state.crop.previewW = pw;
+  state.crop.previewH = ph;
+  state.crop.box = { x: 0, y: 0, w: pw, h: ph };
+  renderCropBox();
+}
+
+function _updateCropOverlay(prefix, b) {
+  function set(id, css) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.cssText = 'position:absolute;background:var(--c-crop-overlay);pointer-events:none;z-index:1;' + css;
+  }
+  set(prefix+'-ov-top',    'top:0;left:0;right:0;height:'+b.y+'px;');
+  set(prefix+'-ov-bottom', 'top:'+(b.y+b.h)+'px;left:0;right:0;bottom:0;');
+  set(prefix+'-ov-left',   'top:'+b.y+'px;left:0;width:'+b.x+'px;height:'+b.h+'px;');
+  set(prefix+'-ov-right',  'top:'+b.y+'px;left:'+(b.x+b.w)+'px;right:0;height:'+b.h+'px;');
+}
+
+function renderCropBox() {
+  const box = document.querySelector('#vid-crop-wrap .crop-box');
+  const b = state.crop.box;
+  box.style.left = b.x + 'px';
+  box.style.top = b.y + 'px';
+  box.style.width = b.w + 'px';
+  box.style.height = b.h + 'px';
+  _updateCropOverlay('vid', b);
+  syncCropValues();
+}
+
+function syncCropValues() {
+  const b = state.crop.box;
+  const pw = state.crop.previewW || 1;
+  const ph = state.crop.previewH || 1;
+  const vw = state.crop.vidW || pw;
+  const vh = state.crop.vidH || ph;
+  const scaleX = vw / pw;
+  const scaleY = vh / ph;
+  document.getElementById('crop-x').value = Math.round(b.x * scaleX);
+  document.getElementById('crop-y').value = Math.round(b.y * scaleY);
+  document.getElementById('crop-w').value = Math.round(b.w * scaleX);
+  document.getElementById('crop-h').value = Math.round(b.h * scaleY);
+  cropUpdate();
+}
+
+function cropValuesChanged() {
+  const vw = state.crop.vidW || state.crop.previewW || 1;
+  const vh = state.crop.vidH || state.crop.previewH || 1;
+  const pw = state.crop.previewW || 1;
+  const ph = state.crop.previewH || 1;
+  const scaleX = pw / vw;
+  const scaleY = ph / vh;
+  const x = parseInt(document.getElementById('crop-x').value) || 0;
+  const y = parseInt(document.getElementById('crop-y').value) || 0;
+  const w = parseInt(document.getElementById('crop-w').value) || vw;
+  const h = parseInt(document.getElementById('crop-h').value) || vh;
+  state.crop.box = { x: x * scaleX, y: y * scaleY, w: w * scaleX, h: h * scaleY };
+  renderCropBox();
+  cropUpdate();
+}
+
+function setCropAspect(ar, ab) {
+  state.crop.aspect = (ar && ab) ? (ar / ab) : 0;
+  // Update active pill
+  const key = (ar && ab) ? ar + ':' + ab : 'free';
+  document.querySelectorAll('.aspect-btn').forEach(b => b.classList.toggle('active', b.dataset.ar === key));
+  if (state.crop.aspect && state.crop.previewW > 0) {
+    const b = state.crop.box;
+    b.h = b.w / state.crop.aspect;
+    if (b.y + b.h > state.crop.previewH) {
+      b.h = state.crop.previewH - b.y;
+      b.w = b.h * state.crop.aspect;
+    }
+    renderCropBox();
+  }
+}
+
+function cropUpdate() {
+  const inp = document.getElementById('crop-input').value.trim() || 'input.mp4';
+  const out = document.getElementById('crop-output').value.trim() || 'output.mp4';
+  const x = document.getElementById('crop-x').value || 0;
+  const y = document.getElementById('crop-y').value || 0;
+  const w = document.getElementById('crop-w').value || 1280;
+  const h = document.getElementById('crop-h').value || 720;
+  const scale = document.getElementById('crop-scale').value;
+  let vf = `crop=${w}:${h}:${x}:${y}`;
+  if (scale) vf += `,scale=${scale}:-2`;
+  document.getElementById('crop-cmd').textContent = `ffmpeg -y -i "${inp}" -vf "${vf}" -c:v libx264 -crf 23 -c:a copy "${out}"`;
+}
+
+async function startCrop() {
+  const files = state.cropFiles;
+  if (!files.length) { alert('Input path is required'); return; }
+  const params = {
+    x: parseInt(document.getElementById('crop-x').value) || 0,
+    y: parseInt(document.getElementById('crop-y').value) || 0,
+    w: parseInt(document.getElementById('crop-w').value),
+    h: parseInt(document.getElementById('crop-h').value),
+    scale: document.getElementById('crop-scale').value,
+    vcodec: 'libopenh264',
+    crf: 23,
+  };
+  if (files.length === 1) {
+    const out = document.getElementById('crop-output').value.trim() ||
+      (capabilities.outputs_dir || '/tmp') + '/' + Date.now() + '_crop.mp4';
+    await createJob('crop', files[0].path, out, params);
+  } else {
+    for (const f of files) {
+      const fname = f.name || f.path.split('/').pop();
+      const dot = fname.lastIndexOf('.');
+      const base = dot >= 0 ? fname.slice(0, dot) : fname;
+      const out = (capabilities.outputs_dir || '/tmp') + '/' + base + '_crop_' + Date.now() + '.mp4';
+      await createJob('crop', f.path, out, params);
+    }
+  }
+  showView('queue');
+}
+
+// Generic crop drag — used for both video and image crop
+function initCropDrag(wrapEl, stateRef, renderFn) {
+  let drag = null;
+  const boxEl = wrapEl.querySelector('.crop-box');
+  function clientXY(e) { const s = e.touches ? e.touches[0] : e; return { x: s.clientX, y: s.clientY }; }
+  function beginDrag(e) {
+    const hit = e.target.closest('.crop-handle-hit');
+    const dir = hit ? hit.dataset.dir : 'move';
+    const {x, y} = clientXY(e);
+    drag = { dir, startX: x, startY: y, startBox: { ...stateRef.box } };
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!drag) return;
+    if (e.cancelable) e.preventDefault();
+    const {x, y} = clientXY(e);
+    const dx = x - drag.startX, dy = y - drag.startY;
+    const sb = drag.startBox;
+    const pw = stateRef.previewW, ph = stateRef.previewH, ar = stateRef.aspect || 0;
+    const dir = drag.dir;
+    let bx = sb.x, by = sb.y, w = sb.w, h = sb.h;
+
+    if (dir === 'move') {
+      bx = Math.max(0, Math.min(pw - w, sb.x + dx));
+      by = Math.max(0, Math.min(ph - h, sb.y + dy));
+      stateRef.box = { x: bx, y: by, w, h };
+      renderFn();
+      return;
+    }
+
+    // Raw resize from drag delta
+    if (dir.includes('r')) w = Math.max(20, sb.w + dx);
+    if (dir.includes('l')) w = Math.max(20, sb.w - dx);
+    if (dir.includes('b')) h = Math.max(20, sb.h + dy);
+    if (dir.includes('t')) h = Math.max(20, sb.h - dy);
+
+    if (ar) {
+      // For each handle, compute the maximum AR-correct box that fits within the canvas,
+      // anchored to the handle's fixed edge/corner.
+      const cx = sb.x + sb.w / 2;  // original horizontal center
+      const cy = sb.y + sb.h / 2;  // original vertical center
+
+      if (dir === 'tm' || dir === 'bm') {
+        // h primary; fixed horizontal center, top or bottom edge anchored
+        const maxH = dir === 'bm' ? ph - sb.y : sb.y + sb.h;
+        const maxW = 2 * Math.min(cx, pw - cx);
+        h = Math.min(h, maxH, maxW / ar);
+        w = h * ar;
+        bx = cx - w / 2;
+        by = dir === 'bm' ? sb.y : sb.y + sb.h - h;
+      } else if (dir === 'ml' || dir === 'mr') {
+        // w primary; fixed vertical center, left or right edge anchored
+        const maxW = dir === 'mr' ? pw - sb.x : sb.x + sb.w;
+        const maxH = 2 * Math.min(cy, ph - cy);
+        w = Math.min(w, maxW, maxH * ar);
+        h = w / ar;
+        bx = dir === 'mr' ? sb.x : sb.x + sb.w - w;
+        by = cy - h / 2;
+      } else {
+        // Corner: w primary; opposite corner is the anchor.
+        // maxW/maxH = distance from anchor to canvas boundary in each direction.
+        const maxW = dir.includes('l') ? sb.x + sb.w : pw - sb.x;
+        const maxH = dir.includes('t') ? sb.y + sb.h : ph - sb.y;
+        w = Math.min(w, maxW, maxH * ar);
+        h = w / ar;
+        bx = dir.includes('l') ? sb.x + sb.w - w : sb.x;
+        by = dir.includes('t') ? sb.y + sb.h - h : sb.y;
+      }
+    } else {
+      // No AR: anchor the fixed edge, clamp to canvas independently
+      if (dir.includes('l')) { bx = Math.max(0, sb.x + sb.w - w); w = sb.x + sb.w - bx; }
+      else { bx = sb.x; w = Math.min(w, pw - bx); }
+      if (dir.includes('t')) { by = Math.max(0, sb.y + sb.h - h); h = sb.y + sb.h - by; }
+      else { by = sb.y; h = Math.min(h, ph - by); }
+    }
+
+    w = Math.max(20, w); h = Math.max(20, h);
+    bx = Math.max(0, bx); by = Math.max(0, by);
+    stateRef.box = { x: bx, y: by, w, h };
+    renderFn();
+  }
+  function endDrag() { drag = null; }
+  boxEl.addEventListener('mousedown', beginDrag);
+  boxEl.addEventListener('touchstart', beginDrag, { passive: false });
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+}
+initCropDrag(document.getElementById('vid-crop-wrap'), state.crop, renderCropBox);
+
+// ══════════════════════════════════════════════════════════════════ Jobs / Queue
+async function createJob(type, input_path, output_path, params) {
+  try {
+    const r = await fetch('/api/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, input_path, output_path, params }),
+    });
+    if (!r.ok) {
+      const err = await r.json();
+      alert('Error: ' + (err.detail || JSON.stringify(err)));
+      return null;
+    }
+    const job = await r.json();
+    refreshQueue();
+    return job;
+  } catch(e) {
+    alert('Error: ' + e.message);
+    return null;
+  }
+}
+
+let _prevDoneCount = 0;
+async function refreshQueue() {
+  try {
+    const r = await fetch('/api/jobs');
+    if (!r.ok) return;
+    const jobs = await r.json();
+    renderQueue(jobs);
+    renderDashRecent(jobs);
+    // Refresh output files list when a new job completes
+    const doneCount = jobs.filter(j => j.status === 'done').length;
+    if (doneCount !== _prevDoneCount) {
+      _prevDoneCount = doneCount;
+      refreshOutputFiles();
+    }
+  } catch(e) {}
+}
+
+function renderQueue(jobs) {
+  const list = document.getElementById('queue-list');
+  const filtered = queueFilter === 'all' ? jobs : jobs.filter(j => j.tool === queueFilter);
+  if (!filtered.length) {
+    list.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-8">No jobs yet.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  for (const job of filtered) {
+    list.appendChild(buildJobCard(job));
+  }
+}
+
+function renderDashRecent(jobs) {
+  const el = document.getElementById('dash-recent');
+  const recent = jobs.slice(0, 5);
+  if (!recent.length) {
+    el.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">No jobs yet</p>';
+    return;
+  }
+  el.innerHTML = '';
+  for (const job of recent) {
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-3 p-3 card rounded-xl';
+    const statusColor = { done: 'text-primary', error: 'text-error', running: 'text-secondary', cancelled: 'text-on-surface-variant', pending: 'text-on-surface-variant' }[job.status] || 'text-on-surface-variant';
+    const statusIcon = { done: 'check_circle', error: 'error', running: 'sync', cancelled: 'cancel', pending: 'schedule' }[job.status] || 'schedule';
+    div.innerHTML = `
+      <span class="material-symbols-outlined ${statusColor} text-xl ${job.status === 'running' ? 'fill-icon' : ''}">${statusIcon}</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-on-surface truncate">${job.input_path.split('/').pop()}</p>
+        <p class="text-xs text-on-surface-variant font-mono">${job.type} · ${job.status}${job.progress ? ' · ' + job.progress + '%' : ''}</p>
+      </div>`;
+    el.appendChild(div);
+  }
+}
+
+function buildJobCard(job) {
+  const card = document.createElement('div');
+  const isActive = job.status === 'running' || job.status === 'pending';
+  card.className = 'card p-4 space-y-3';
+  card.id = 'job-' + job.id;
+
+  const statusColor = { done: 'var(--c-primary)', error: 'var(--c-error)', running: 'var(--c-secondary)', cancelled: 'var(--c-outline)', pending: 'var(--c-on-surface-muted)' }[job.status] || 'var(--c-on-surface-muted)';
+  const statusIcon = { done: 'check_circle', error: 'error', running: 'sync', cancelled: 'cancel', pending: 'schedule' }[job.status] || 'schedule';
+
+  // Display label: URL domain for yt-dlp, filename for others
+  let displayName;
+  if (job.tool === 'yt-dlp') {
+    try { displayName = new URL(job.input_path).hostname; } catch(e) { displayName = job.input_path; }
+  } else {
+    displayName = job.input_path.split('/').pop();
+  }
+
+  // Output label: directory for yt-dlp, filename for others
+  const outLabel = job.tool === 'yt-dlp' ? job.output_path : job.output_path.split('/').pop();
+
+  card.innerHTML = `
+    <div class="flex items-start justify-between gap-2">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold text-on-surface truncate">${displayName}</p>
+        <p class="text-xs text-on-surface-variant font-mono uppercase mt-0.5">${job.type}</p>
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <span class="material-symbols-outlined text-xl ${job.status === 'running' ? 'fill-icon' : ''}" style="color:${statusColor}">${statusIcon}</span>
+        <span class="text-xs font-mono" style="color:${statusColor}">${job.status}</span>
+      </div>
+    </div>
+    ${isActive ? `
+    <div>
+      <div class="flex justify-between text-xs font-mono mb-1">
+        <span class="text-on-surface">${job.progress}%${job.speed ? ' · ' + job.speed : ''}</span>
+        <span class="text-on-surface-variant truncate max-w-32">${outLabel}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:${job.progress}%"></div></div>
+    </div>` : ''}
+    ${job.status === 'error' && job.error ? `
+    <p class="text-xs text-error font-mono truncate">${job.error}</p>` : ''}
+    <div class="flex gap-2 pt-1 border-t border-outline-variant">
+      <button onclick="showLog('${job.id}')" class="btn-secondary px-3 h-8 text-xs flex-1">
+        <span class="material-symbols-outlined text-sm">terminal</span>Log
+      </button>
+      ${job.status === 'done' && job.tool !== 'yt-dlp' ? `<a href="/api/download?path=${encodeURIComponent(job.output_path)}" download class="btn-secondary px-3 h-8 text-xs flex items-center gap-1" style="background:var(--c-teal-btn);color:var(--c-teal-text);text-decoration:none;border-radius:8px">
+        <span class="material-symbols-outlined text-sm">download</span>Download
+      </a>` : ''}
+      ${isActive ? `<button onclick="cancelJob('${job.id}')" class="h-8 px-3 rounded-lg text-xs flex items-center gap-1 text-error hover:bg-error-container/20 transition-colors">
+        <span class="material-symbols-outlined text-sm">cancel</span>Cancel
+      </button>` : ''}
+    </div>`;
+  return card;
+}
+
+async function cancelJob(id) {
+  if (!confirm('Cancel this job?')) return;
+  await fetch('/api/jobs/' + id, { method: 'DELETE' });
+  refreshQueue();
+}
+
+function clearCompleted() {
+  // Filter in-memory: just refresh after a beat
+  fetch('/api/jobs').then(r => r.json()).then(jobs => {
+    const active = jobs.filter(j => j.status === 'running' || j.status === 'pending');
+    if (active.length < jobs.length) {
+      // We'll just grey-out completed by refreshing; actual clearing would need a backend endpoint
+      renderQueue(active);
+    }
+  });
+}
+
+// Log modal
+let logEventSource = null;
+async function showLog(jobId) {
+  document.getElementById('log-modal').classList.remove('hidden');
+  document.getElementById('log-modal-title').textContent = 'Job ' + jobId;
+  if (logEventSource) { logEventSource.close(); logEventSource = null; }
+  const r = await fetch('/api/jobs/' + jobId);
+  const job = await r.json();
+  document.getElementById('log-cmd').textContent = job.command;
+  const logEl = document.getElementById('log-content');
+  logEl.textContent = job.log.join('\n');
+  logEl.scrollTop = logEl.scrollHeight;
+  if (job.status === 'running') {
+    logEventSource = new EventSource('/api/jobs/' + jobId + '/stream');
+    logEventSource.onmessage = e => {
+      const d = JSON.parse(e.data);
+      if (d.log) { logEl.textContent += d.log.join('\n') + '\n'; logEl.scrollTop = logEl.scrollHeight; }
+      if (d.done) { logEventSource.close(); logEventSource = null; }
+    };
+  }
+}
+
+function closeLog() {
+  document.getElementById('log-modal').classList.add('hidden');
+  if (logEventSource) { logEventSource.close(); logEventSource = null; }
+}
+function closeLogIfOutside(e) {
+  if (e.target === document.getElementById('log-modal')) closeLog();
+}
+
+// ══════════════════════════════════════════════════════════════════ Helpers
+function autoSuggestOutput(inputId, outputId, suffix = '') {
+  const inPath = document.getElementById(inputId).value.trim();
+  if (!inPath) return;
+  const filename = inPath.split('/').pop() || '';
+  const dotIdx = filename.lastIndexOf('.');
+  const base = dotIdx >= 0 ? filename.slice(0, dotIdx) : filename;
+  const ext = dotIdx >= 0 ? filename.slice(dotIdx) : '.mp4';
+  const outDir = capabilities.outputs_dir || '/tmp';
+  document.getElementById(outputId).value = outDir + '/' + base + suffix + '_' + Date.now() + ext;
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+}
+
+function fmtTime(secs) {
+  if (!secs || isNaN(secs)) return '0:00';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.floor(secs % 60);
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function secsToHMS(secs) {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = (secs % 60).toFixed(3);
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${s.padStart(6,'0')}`;
+}
+
+function hmsToSecs(hms) {
+  if (!hms) return 0;
+  const parts = hms.split(':').map(Number);
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return parts[0] || 0;
+}
+
+// ══════════════════════════════════════════════════════════════════ Upload / Download
+
+function openUploadPicker(targetFieldId, callback) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'video/*,audio/*,.mkv,.avi,.mov,.mp4,.webm,.flv,.ts,.mts,.wmv';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (file) uploadFile(file, targetFieldId, callback);
+  };
+  input.click();
+}
+
+function uploadFile(file, targetFieldId, callback, progressContainerId) {
+  const prefix = targetFieldId ? targetFieldId.split('-')[0] : null;
+  const progressWrap = prefix ? document.getElementById(prefix + '-upload-progress') : null;
+  const progressBar  = prefix ? document.getElementById(prefix + '-upload-bar')      : null;
+  const progressPct  = prefix ? document.getElementById(prefix + '-upload-pct')      : null;
+  const progressName = prefix ? document.getElementById(prefix + '-upload-name')     : null;
+
+  if (progressWrap) {
+    progressWrap.classList.remove('hidden');
+    if (progressName) progressName.textContent = file.name;
+    if (progressPct)  progressPct.textContent  = '0%';
+    if (progressBar)  progressBar.style.width  = '0%';
+  }
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const fd  = new FormData();
+    fd.append('file', file);
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        if (progressBar) progressBar.style.width = pct + '%';
+        if (progressPct) progressPct.textContent = pct + '%';
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        if (targetFieldId) {
+          const field = document.getElementById(targetFieldId);
+          if (field) field.value = data.path;
+        }
+        if (progressPct)  progressPct.textContent  = '100% ✓';
+        if (progressBar)  progressBar.style.width   = '100%';
+        setTimeout(() => { if (progressWrap) progressWrap.classList.add('hidden'); }, 2000);
+        if (callback) callback();
+        refreshUploads();
+        resolve(data);
+      } else {
+        if (progressPct) progressPct.textContent = 'Error';
+        reject(new Error('Upload failed: ' + xhr.status));
+      }
+    };
+
+    xhr.onerror = () => {
+      if (progressPct) progressPct.textContent = 'Error';
+      reject(new Error('Network error'));
+    };
+
+    xhr.open('POST', '/api/upload');
+    xhr.send(fd);
+  });
+}
+
+// Files view: drag & drop on the zone
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = document.getElementById('upload-zone');
+  if (!zone) return;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => handleDrop(e));
+});
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files);
+  if (files.length === 0) return;
+  files.forEach(f => uploadFileToList(f));
+}
+
+function handleFileSelect(e) {
+  const files = Array.from(e.target.files);
+  files.forEach(f => uploadFileToList(f));
+  e.target.value = '';
+}
+
+function uploadFileToList(file) {
+  const id = 'up-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+  const list = document.getElementById('upload-progress-list');
+
+  const item = document.createElement('div');
+  item.id = id;
+  item.className = 'card-low p-3 space-y-1';
+  item.innerHTML = `
+    <div class="flex justify-between text-xs font-mono">
+      <span class="text-on-surface truncate flex-1 mr-2">${file.name}</span>
+      <span id="${id}-pct" class="text-primary flex-shrink-0">0%</span>
+    </div>
+    <div class="upload-progress-bar"><div id="${id}-bar" class="upload-progress-fill"></div></div>`;
+  list.prepend(item);
+
+  const xhr = new XMLHttpRequest();
+  const fd = new FormData();
+  fd.append('file', file);
+
+  xhr.upload.onprogress = e => {
+    if (e.lengthComputable) {
+      const pct = Math.round(e.loaded / e.total * 100);
+      const bar = document.getElementById(id + '-bar');
+      const pctEl = document.getElementById(id + '-pct');
+      if (bar) bar.style.width = pct + '%';
+      if (pctEl) pctEl.textContent = pct + '%';
+    }
+  };
+
+  xhr.onload = () => {
+    const pctEl = document.getElementById(id + '-pct');
+    if (xhr.status === 200) {
+      if (pctEl) pctEl.textContent = '✓ Done';
+      setTimeout(() => { item.remove(); }, 3000);
+      refreshUploads();
+    } else {
+      if (pctEl) pctEl.textContent = '✗ Error';
+      item.style.borderColor = 'var(--c-error)';
+    }
+  };
+
+  xhr.onerror = () => {
+    const pctEl = document.getElementById(id + '-pct');
+    if (pctEl) pctEl.textContent = '✗ Error';
+  };
+
+  xhr.open('POST', '/api/upload');
+  xhr.send(fd);
+}
+
+async function refreshAllFiles() {
+  await Promise.all([refreshUploads(), refreshOutputFiles()]);
+}
+
+async function refreshOutputFiles() {
+  try {
+    const r = await fetch('/api/output-files');
+    if (!r.ok) return;
+    const files = await r.json();
+    renderOutputFileList(files);
+  } catch(e) {}
+}
+
+function renderOutputFileList(files) {
+  const el = document.getElementById('output-file-list');
+  if (!el) return;
+  if (!files.length) {
+    el.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-2">No completed jobs yet</p>';
+    return;
+  }
+  el.innerHTML = '';
+  for (const f of files) {
+    const row = document.createElement('div');
+    row.className = 'card p-3 flex items-center gap-3';
+    const icon = f.is_video ? 'movie' : f.is_image ? 'image' : 'audio_file';
+    const iconColor = f.is_video ? 'text-primary' : f.is_image ? 'text-tertiary' : 'text-secondary';
+    const sourceChip = {
+      'ffmpeg': { bg: 'var(--c-secondary-cont)', color: 'var(--c-on-secondary-cont)', label: 'ffmpeg' },
+      'imagemagick': { bg: 'var(--c-success-bg)', color: 'var(--c-success)', label: 'ImageMagick' },
+      'yt-dlp': { bg: 'var(--c-error-bg)', color: 'var(--c-error)', label: 'yt-dlp' },
+    }[f.source] || { bg: 'var(--c-surface-highest)', color: 'var(--c-on-surface-muted)', label: f.source };
+    row.innerHTML = `
+      <span class="material-symbols-outlined ${iconColor} text-xl flex-shrink-0">${icon}</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-on-surface truncate">${f.name}</p>
+        <div class="flex items-center gap-2 mt-0.5">
+          <span class="chip text-xs" style="background:${sourceChip.bg};color:${sourceChip.color}">${sourceChip.label}</span>
+          <span class="text-xs text-on-surface-variant font-mono">${formatSize(f.size)}</span>
+        </div>
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button onclick="openFileInfo('${encodeURIComponent(f.path)}')" title="ファイル情報"
+                class="btn-secondary px-2 h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">info</span>
+        </button>
+        <button onclick="openPreview('${encodeURIComponent(f.path)}','${encodeURIComponent(f.name)}',${f.is_video},${f.is_image})"
+                title="プレビュー" class="btn-secondary px-2 h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">visibility</span>
+        </button>
+        <button onclick="useOutputFile('${f.path}',${f.is_image})" title="Use as input"
+                class="btn-secondary px-2 h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">input</span>
+        </button>
+        <a href="/api/download?path=${encodeURIComponent(f.path)}" download
+           class="btn-secondary px-2 h-8 text-xs flex items-center gap-1" style="background:var(--c-teal-btn);color:var(--c-teal-text);text-decoration:none">
+          <span class="material-symbols-outlined text-sm">download</span>
+        </a>
+        <button onclick="deleteOutputFile('${encodeURIComponent(f.path)}','${f.name.replace(/'/g,"\\'")}',this)" title="削除"
+                class="h-8 w-8 flex items-center justify-center rounded-lg text-error hover:bg-error-container/20 transition-colors">
+          <span class="material-symbols-outlined text-sm">delete</span>
+        </button>
+      </div>`;
+    el.appendChild(row);
+  }
+}
+
+async function deleteOutputFile(pathEnc, name, btn) {
+  if (!confirm('"' + name + '" を削除しますか？')) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/output-files?path=' + pathEnc, { method: 'DELETE' });
+    if (r.ok) refreshOutputFiles();
+    else btn.disabled = false;
+  } catch(e) { btn.disabled = false; }
+}
+
+function useOutputFile(path, isImage = false) {
+  const name = path.split('/').pop();
+  const view = state.currentView;
+  const map = { convert: 'conv-input', trim: 'trim-input', crop: 'crop-input', image: 'img-input' };
+  const target = map[view];
+  if (target) {
+    document.getElementById(target).value = path;
+    _setPickerDisplayName(target, name);
+    const callbacks = { convert: convInputChanged, trim: trimInputChanged, crop: cropInputChanged, image: imgInputChanged };
+    const cb = callbacks[view];
+    if (cb) cb();
+  } else if (isImage) {
+    showView('image');
+    document.getElementById('img-input').value = path;
+    _setPickerDisplayName('img-input', name);
+    imgInputChanged();
+  } else {
+    showView('convert');
+    document.getElementById('conv-input').value = path;
+    _setPickerDisplayName('conv-input', name);
+    convInputChanged();
+  }
+}
+
+async function refreshUploads() {
+  try {
+    const r = await fetch('/api/uploads');
+    if (!r.ok) return;
+    const files = await r.json();
+    renderUploadList(files);
+  } catch(e) {}
+}
+
+function renderUploadList(files) {
+  const el = document.getElementById('upload-file-list');
+  if (!el) return;
+  if (!files.length) {
+    el.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-4">No uploaded files</p>';
+    return;
+  }
+  el.innerHTML = '';
+  for (const f of files) {
+    const row = document.createElement('div');
+    row.className = 'card p-3 flex items-center gap-3';
+    const icon = f.is_video ? 'movie' : f.is_image ? 'image' : 'audio_file';
+    const iconColor = f.is_video ? 'text-primary' : f.is_image ? 'text-tertiary' : 'text-secondary';
+    row.innerHTML = `
+      <span class="material-symbols-outlined ${iconColor} text-xl flex-shrink-0">${icon}</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-on-surface truncate">${f.name}</p>
+        <p class="text-xs text-on-surface-variant font-mono">${formatSize(f.size)}</p>
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button onclick="openFileInfo('${encodeURIComponent(f.path)}')" title="ファイル情報"
+                class="btn-secondary px-2 h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">info</span>
+        </button>
+        <button onclick="openPreview('${encodeURIComponent(f.path)}','${encodeURIComponent(f.name)}',${f.is_video},${f.is_image})"
+                title="プレビュー" class="btn-secondary px-2 h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">visibility</span>
+        </button>
+        <button onclick="useUploadedFile('${f.path}',${f.is_image})" title="Use as input"
+                class="btn-secondary px-2 h-8 text-xs">
+          <span class="material-symbols-outlined text-sm">input</span>
+        </button>
+        <a href="/api/download?path=${encodeURIComponent(f.path)}" download
+           class="btn-secondary px-2 h-8 text-xs flex items-center gap-1" style="background:var(--c-teal-btn);color:var(--c-teal-text);text-decoration:none">
+          <span class="material-symbols-outlined text-sm">download</span>
+        </a>
+        <button onclick="deleteUpload('${f.name}', this)" title="Delete"
+                class="h-8 w-8 flex items-center justify-center rounded-lg text-error hover:bg-error-container/20 transition-colors">
+          <span class="material-symbols-outlined text-sm">delete</span>
+        </button>
+      </div>`;
+    el.appendChild(row);
+  }
+}
+
+function useUploadedFile(path, isImage = false) {
+  const name = path.split('/').pop();
+  const view = state.currentView;
+  const map = { convert: 'conv-input', trim: 'trim-input', crop: 'crop-input', image: 'img-input' };
+  const target = map[view];
+  if (target) {
+    document.getElementById(target).value = path;
+    _setPickerDisplayName(target, name);
+    const callbacks = { convert: convInputChanged, trim: trimInputChanged, crop: cropInputChanged, image: imgInputChanged };
+    const cb = callbacks[view];
+    if (cb) cb();
+  } else if (isImage) {
+    showView('image');
+    document.getElementById('img-input').value = path;
+    _setPickerDisplayName('img-input', name);
+    imgInputChanged();
+  } else {
+    showView('convert');
+    document.getElementById('conv-input').value = path;
+    _setPickerDisplayName('conv-input', name);
+    convInputChanged();
+  }
+}
+
+async function deleteUpload(name, btn) {
+  if (!confirm('Delete "' + name + '"?')) return;
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/uploads/' + encodeURIComponent(name), { method: 'DELETE' });
+    if (r.ok) refreshUploads();
+    else btn.disabled = false;
+  } catch(e) { btn.disabled = false; }
+}
+
+// ══ Capabilities ══════════════════════════════════════════════════════════════
+let capabilities = {};
+
+async function loadCapabilities() {
+  try {
+    const r = await fetch('/api/capabilities');
+    if (!r.ok) return;
+    capabilities = await r.json();
+  } catch(e) { return; }
+  applyCapabilities();
+}
+
+function applyCapabilities() {
+  const hasIM = capabilities.imagemagick;
+  const hasYtDlp = capabilities.yt_dlp;
+  setupInstallBanner('image', hasIM, 'imagemagick');
+  setupInstallBanner('download', hasYtDlp, 'yt-dlp');
+  document.querySelectorAll('.quick-action-btn').forEach(btn => {
+    const req = btn.dataset.requires;
+    const ok = req === 'imagemagick' ? hasIM : req === 'yt_dlp' ? hasYtDlp : true;
+    if (!ok) btn.style.opacity = '0.5';
+  });
+  const list = document.getElementById('tool-status-list');
+  if (!list) return;
+  const tools = [
+    { name: 'ffmpeg',      ok: capabilities.ffmpeg },
+    { name: 'ffprobe',     ok: capabilities.ffprobe },
+    { name: 'ImageMagick', ok: hasIM },
+    { name: 'yt-dlp',      ok: hasYtDlp },
+  ];
+  list.innerHTML = tools.map(t => '<div class="flex items-center gap-2 text-xs font-mono">' +
+    '<span class="material-symbols-outlined text-sm ' + (t.ok ? 'text-primary' : 'text-error') + '">' + (t.ok ? 'check_circle' : 'cancel') + '</span>' +
+    '<span class="' + (t.ok ? 'text-on-surface' : 'text-on-surface-variant') + '">' + t.name + '</span>' +
+    '<span class="text-on-surface-variant">&nbsp;' + (t.ok ? 'available' : 'not found') + '</span></div>'
+  ).join('');
+  const dirInfo = document.getElementById('settings-outdir-info');
+  if (dirInfo) {
+    dirInfo.textContent =
+      'Outputs: ' + (capabilities.outputs_dir || '?') + '\n' +
+      'Downloads: ' + (capabilities.downloads_dir || '?');
+    dirInfo.style.whiteSpace = 'pre';
+  }
+}
+
+function setupInstallBanner(tool, isAvailable, pkgName) {
+  const banner = document.getElementById(tool + '-install-banner');
+  const features = document.getElementById(tool + '-features');
+  if (!banner || !features) return;
+  if (isAvailable) {
+    banner.classList.add('hidden');
+    features.style.opacity = '';
+    features.style.pointerEvents = '';
+    return;
+  }
+  banner.classList.remove('hidden');
+  features.style.opacity = '0.35';
+  features.style.pointerEvents = 'none';
+  const cmdEl = document.getElementById(tool + '-install-cmd');
+  if (!cmdEl) return;
+  const osId = capabilities.os_id || '';
+  const imPkg = pkgName === 'imagemagick' ? 'ImageMagick' : pkgName;
+  let cmd = '';
+  if (['fedora','rhel','centos','rocky','almalinux'].includes(osId)) {
+    cmd = 'sudo dnf install ' + imPkg;
+  } else if (['ubuntu','debian','linuxmint'].includes(osId)) {
+    cmd = 'sudo apt install ' + pkgName;
+  } else if (['arch','manjaro'].includes(osId)) {
+    cmd = 'sudo pacman -S ' + pkgName;
+  } else if (['opensuse','opensuse-leap','opensuse-tumbleweed'].includes(osId)) {
+    cmd = 'sudo zypper install ' + pkgName;
+  } else {
+    cmdEl.textContent = '# Fedora\nsudo dnf install ' + imPkg + '\n\n# Ubuntu/Debian\nsudo apt install ' + pkgName + '\n\n# macOS\nbrew install ' + pkgName;
+    const altEl = document.getElementById(tool + '-install-alt');
+    if (altEl) altEl.classList.add('hidden');
+    return;
+  }
+  cmdEl.textContent = cmd;
+}
+
+function toggleAltInstall(tool) {
+  const el = document.getElementById(tool + '-install-alt');
+  if (el) el.classList.toggle('hidden');
+}
+
+// ══ Queue filter ═══════════════════════════════════════════════════════════════
+let queueFilter = 'all';
+
+function setQueueFilter(filter) {
+  queueFilter = filter;
+  document.querySelectorAll('.qf-btn').forEach(btn => btn.classList.remove('active'));
+  const active = document.getElementById('qf-' + filter);
+  if (active) active.classList.add('active');
+  refreshQueue();
+}
+
+// ══ Image processing ══════════════════════════════════════════════════════════
+let imageOp = 'resize';
+
+function setImageOp(op) {
+  imageOp = op;
+  ['resize','convert','compress','crop'].forEach(o => {
+    const btn = document.getElementById('imgop-' + o);
+    const sec = document.getElementById('img-params-' + o);
+    if (btn) btn.classList.toggle('active', o === op);
+    if (sec) sec.classList.toggle('hidden', o !== op);
+  });
+  if (op === 'crop') {
+    const path = document.getElementById('img-input').value.trim();
+    if (path) loadImgCropThumb(path);
+  }
+  imgUpdate();
+}
+
+
+function imgInputChanged() {
+  const path = document.getElementById('img-input').value.trim();
+  if (!path) return;
+  const fname = path.split('/').pop() || '';
+  const dot = fname.lastIndexOf('.');
+  const base = dot >= 0 ? fname.slice(0, dot) : fname;
+  const ext = dot >= 0 ? fname.slice(dot) : '.jpg';
+  const outDir = capabilities.outputs_dir || '/tmp';
+  const outFld = document.getElementById('img-output');
+  if (outFld) outFld.value = outDir + '/' + base + '_out_' + Date.now() + ext;
+  if (imageOp === 'crop') loadImgCropThumb(path);
+  imgUpdate();
+}
+
+function imgFilesChanged(files) {
+  state.imgFiles = files;
+  const inp = document.getElementById('img-input');
+  if (inp && files.length) inp.value = files[0].path;
+  const nameEl = document.getElementById('img-input-name');
+  if (nameEl) {
+    nameEl.textContent = files.length === 1 ? files[0].name : files.length + ' ファイル選択中';
+    nameEl.classList.remove('text-on-surface-variant');
+    nameEl.classList.add('text-on-surface');
+  }
+  imgInputChanged();
+}
+
+function convFilesChanged(files) {
+  state.convFiles = files;
+  const inp = document.getElementById('conv-input');
+  if (inp && files.length) inp.value = files[0].path;
+  const nameEl = document.getElementById('conv-input-name');
+  if (nameEl) {
+    nameEl.textContent = files.length === 1 ? files[0].name : files.length + ' ファイル選択中';
+    nameEl.classList.remove('text-on-surface-variant');
+    nameEl.classList.add('text-on-surface');
+  }
+  convInputChanged();
+}
+
+function trimFilesChanged(files) {
+  state.trimFiles = files;
+  const inp = document.getElementById('trim-input');
+  if (inp && files.length) inp.value = files[0].path;
+  const nameEl = document.getElementById('trim-input-name');
+  if (nameEl) {
+    nameEl.textContent = files.length === 1 ? files[0].name : files.length + ' ファイル選択中';
+    nameEl.classList.remove('text-on-surface-variant');
+    nameEl.classList.add('text-on-surface');
+  }
+  trimInputChanged();
+}
+
+function cropFilesChanged(files) {
+  state.cropFiles = files;
+  const inp = document.getElementById('crop-input');
+  if (inp && files.length) inp.value = files[0].path;
+  const nameEl = document.getElementById('crop-input-name');
+  if (nameEl) {
+    nameEl.textContent = files.length === 1 ? files[0].name : files.length + ' ファイル選択中';
+    nameEl.classList.remove('text-on-surface-variant');
+    nameEl.classList.add('text-on-surface');
+  }
+  cropInputChanged();
+}
+
+function imgUpdate() {
+  const cmdName = capabilities.imagemagick_cmd || 'convert';
+  const base = cmdName === 'magick' ? 'magick' : 'convert';
+  const inp = document.getElementById('img-input').value.trim() || 'input.jpg';
+  const out = document.getElementById('img-output').value.trim() || 'output.jpg';
+  let cmd;
+  if (imageOp === 'resize') {
+    const w = document.getElementById('img-resize-w').value;
+    const h = document.getElementById('img-resize-h').value;
+    const aspect = document.getElementById('tog-img-aspect').classList.contains('on');
+    let geo = (w && h) ? w + 'x' + h : w ? w + 'x' : h ? 'x' + h : '1920x1080';
+    if (aspect && w && h) geo += '>';
+    cmd = base + ' "' + inp + '" -resize ' + geo + ' "' + out + '"';
+  } else if (imageOp === 'convert') {
+    const q = document.getElementById('img-conv-quality').value;
+    const strip = document.getElementById('tog-img-strip').classList.contains('on');
+    cmd = base + ' "' + inp + '" -quality ' + q + (strip ? ' -strip' : '') + ' "' + out + '"';
+  } else if (imageOp === 'compress') {
+    const q = document.getElementById('img-comp-quality').value;
+    const strip = document.getElementById('tog-img-comp-strip').classList.contains('on');
+    cmd = base + ' "' + inp + '" -quality ' + q + (strip ? ' -strip' : '') + ' "' + out + '"';
+  } else {
+    const x = document.getElementById('img-crop-x').value || 0;
+    const y = document.getElementById('img-crop-y').value || 0;
+    const w = document.getElementById('img-crop-w').value || '';
+    const h = document.getElementById('img-crop-h').value || '';
+    const sInp = document.getElementById('img-input').value.trim() || 'input.jpg';
+    const sOut = document.getElementById('img-output').value.trim() || 'output.jpg';
+    cmd = (base === 'magick' ? 'magick' : 'convert') + ' "' + sInp + '" -crop ' + w + 'x' + h + '+' + x + '+' + y + ' +repage "' + sOut + '"';
+  }
+  const el = document.getElementById('img-cmd');
+  if (el) el.textContent = cmd;
+}
+
+async function startImageJob() {
+  if (!capabilities.imagemagick) { alert('ImageMagick が見つかりません'); return; }
+  const files = state.imgFiles;
+  if (!files.length) { alert('入力ファイルを指定してください'); return; }
+  const outDir = capabilities.outputs_dir || '/tmp';
+  const params = _imgParams();
+  for (const f of files) {
+    const fname = f.name || f.path.split('/').pop() || 'output';
+    const dot = fname.lastIndexOf('.');
+    const base = dot >= 0 ? fname.slice(0, dot) : fname;
+    const origExt = dot >= 0 ? fname.slice(dot) : '.jpg';
+    const outExt = imageOp === 'convert' ? '.' + document.getElementById('img-conv-fmt').value : origExt;
+    const out = files.length === 1
+      ? (document.getElementById('img-output').value.trim() || outDir + '/' + base + '_out_' + Date.now() + outExt)
+      : outDir + '/' + base + '_out_' + Date.now() + outExt;
+    await createJob('image_' + imageOp, f.path, out, params);
+  }
+  if (files.length > 1) alert(files.length + ' 件のジョブをキューに追加しました');
+  showView('queue');
+}
+
+function _imgParams() {
+  if (imageOp === 'resize') {
+    return {
+      width: document.getElementById('img-resize-w').value,
+      height: document.getElementById('img-resize-h').value,
+      keep_aspect: document.getElementById('tog-img-aspect').classList.contains('on'),
+    };
+  } else if (imageOp === 'convert') {
+    return {
+      quality: parseInt(document.getElementById('img-conv-quality').value),
+      strip_metadata: document.getElementById('tog-img-strip').classList.contains('on'),
+    };
+  } else if (imageOp === 'compress') {
+    return {
+      quality: parseInt(document.getElementById('img-comp-quality').value),
+      strip_metadata: document.getElementById('tog-img-comp-strip').classList.contains('on'),
+    };
+  } else {
+    return {
+      x: parseInt(document.getElementById('img-crop-x').value) || 0,
+      y: parseInt(document.getElementById('img-crop-y').value) || 0,
+      w: parseInt(document.getElementById('img-crop-w').value) || 0,
+      h: parseInt(document.getElementById('img-crop-h').value) || 0,
+    };
+  }
+}
+
+
+// ══ Image Crop helpers ════════════════════════════════════════════════════════
+let _imgCropDragInited = false;
+
+function renderImgCropBox() {
+  const box = document.querySelector('#img-crop-wrap .crop-box');
+  if (!box) return;
+  const b = state.imgcrop.box;
+  box.style.left = b.x + 'px';
+  box.style.top  = b.y + 'px';
+  box.style.width  = b.w + 'px';
+  box.style.height = b.h + 'px';
+  _updateCropOverlay('img', b);
+  syncImgCropValues();
+}
+
+function syncImgCropValues() {
+  const b = state.imgcrop.box;
+  const pw = state.imgcrop.previewW || 1, ph = state.imgcrop.previewH || 1;
+  const iw = state.imgcrop.imgW || pw,    ih = state.imgcrop.imgH || ph;
+  document.getElementById('img-crop-x').value = Math.round(b.x * iw / pw);
+  document.getElementById('img-crop-y').value = Math.round(b.y * ih / ph);
+  document.getElementById('img-crop-w').value = Math.round(b.w * iw / pw);
+  document.getElementById('img-crop-h').value = Math.round(b.h * ih / ph);
+  imgUpdate();
+}
+
+function imgCropValuesChanged() {
+  const iw = state.imgcrop.imgW || state.imgcrop.previewW || 1;
+  const ih = state.imgcrop.imgH || state.imgcrop.previewH || 1;
+  const pw = state.imgcrop.previewW || 1, ph = state.imgcrop.previewH || 1;
+  const x = parseInt(document.getElementById('img-crop-x').value) || 0;
+  const y = parseInt(document.getElementById('img-crop-y').value) || 0;
+  const w = parseInt(document.getElementById('img-crop-w').value) || iw;
+  const h = parseInt(document.getElementById('img-crop-h').value) || ih;
+  state.imgcrop.box = { x: x * pw / iw, y: y * ph / ih, w: w * pw / iw, h: h * ph / ih };
+  renderImgCropBox();
+  imgUpdate();
+}
+
+function setImgCropAspect(ar, ab) {
+  state.imgcrop.aspect = (ar && ab) ? (ar / ab) : 0;
+  // Update active pill
+  const key = (ar && ab) ? ar + ':' + ab : 'free';
+  document.querySelectorAll('.imgaspect-btn').forEach(b => b.classList.toggle('active', b.dataset.ar === key));
+  if (state.imgcrop.aspect && state.imgcrop.previewW > 0) {
+    const b = state.imgcrop.box;
+    b.h = b.w / state.imgcrop.aspect;
+    if (b.y + b.h > state.imgcrop.previewH) {
+      b.h = state.imgcrop.previewH - b.y;
+      b.w = b.h * state.imgcrop.aspect;
+    }
+    renderImgCropBox();
+  }
+}
+
+async function loadImgCropThumb(path) {
+  const thumb   = document.getElementById('img-crop-thumb');
+  const section = document.getElementById('img-crop-canvas-section');
+  if (!thumb || !section) return;
+
+  // Show section BEFORE load so the img element has layout and offsetWidth is valid
+  section.classList.remove('hidden');
+
+  // Reset image dimensions from prior load
+  state.imgcrop.imgW = 0; state.imgcrop.imgH = 0;
+
+  thumb.src = '/api/thumbnail?path=' + encodeURIComponent(path) + '&w=600';
+  await new Promise(res => { thumb.onload = res; thumb.onerror = res; });
+
+  // Two rAF frames to ensure browser has performed layout after image load
+  await new Promise(res => requestAnimationFrame(() => requestAnimationFrame(res)));
+
+  let pw = thumb.offsetWidth, ph = thumb.offsetHeight;
+  // Fallback: compute from naturalWidth if layout hasn't settled (e.g. still hidden parent)
+  if (pw <= 0 && thumb.naturalWidth > 0) {
+    const wrapW = (document.getElementById('img-crop-wrap') || {}).clientWidth || 400;
+    const scale = Math.min(1, wrapW / thumb.naturalWidth);
+    pw = Math.round(thumb.naturalWidth * scale);
+    ph = Math.round(thumb.naturalHeight * scale);
+  }
+  if (pw <= 0) return; // Truly failed
+
+  try {
+    const r = await fetch('/api/probe?path=' + encodeURIComponent(path));
+    if (r.ok) {
+      const d = await r.json();
+      const vs = (d.streams || []).find(s => s.codec_type === 'video');
+      if (vs && vs.width) { state.imgcrop.imgW = vs.width; state.imgcrop.imgH = vs.height; }
+    }
+  } catch(e) {}
+  // Fallback: use natural dimensions from the thumbnail image itself
+  if (!state.imgcrop.imgW && thumb.naturalWidth) {
+    state.imgcrop.imgW = thumb.naturalWidth;
+    state.imgcrop.imgH = thumb.naturalHeight;
+  }
+
+  state.imgcrop.previewW = pw;
+  state.imgcrop.previewH = ph;
+  state.imgcrop.aspect = 0;
+  document.querySelectorAll('.imgaspect-btn').forEach(b => b.classList.toggle('active', b.dataset.ar === 'free'));
+  state.imgcrop.box = { x: 0, y: 0, w: pw, h: ph };
+  renderImgCropBox();
+
+  if (!_imgCropDragInited) {
+    initCropDrag(document.getElementById('img-crop-wrap'), state.imgcrop, renderImgCropBox);
+    _imgCropDragInited = true;
+  }
+}
+
+// ══ Download (yt-dlp) ═════════════════════════════════════════════════════════
+let _dlFetchTimer = null;
+let _lastFetchedFormats = null;
+
+function dlUrlChanged() {
+  dlUpdate();
+  clearTimeout(_dlFetchTimer);
+  const url = document.getElementById('dl-url').value.trim();
+  if (url && /^https?:\/\//.test(url) && capabilities.yt_dlp) {
+    const st = document.getElementById('dl-fetch-status');
+    if (st) st.innerHTML = '<span class="spin material-symbols-outlined" style="font-size:14px">progress_activity</span>';
+    _dlFetchTimer = setTimeout(fetchFormats, 700);
+  }
+}
+
+function _applyFormatFilters() {
+  if (_lastFetchedFormats) _buildAndRenderFormats(_lastFetchedFormats);
+}
+
+function dlUpdate() {
+  const url = document.getElementById('dl-url').value.trim() || 'URL';
+  const quality = document.getElementById('dl-quality').value;
+  const outdir = capabilities.downloads_dir || '~/Downloads';
+  const subs = document.getElementById('tog-dl-subs').classList.contains('on');
+  const playlist = document.getElementById('tog-dl-playlist').classList.contains('on');
+  const cookies = document.getElementById('dl-cookies').value.trim();
+  const fmtId = document.getElementById('dl-format-id').value.trim();
+  let cmd = 'yt-dlp -o "' + outdir + '/%(title)s.%(ext)s"';
+  if (fmtId) {
+    cmd += ' -f "' + fmtId + '"';
+  } else if (quality === 'audio') {
+    const af = document.getElementById('dl-audio-fmt').value;
+    cmd += ' -f bestaudio -x --audio-format ' + af;
+  } else if (quality === 'best') {
+    cmd += ' -f bestvideo+bestaudio/best';
+  } else {
+    const h = quality.replace('p', '');
+    cmd += ' -f "bestvideo[height<=' + h + ']+bestaudio/best[height<=' + h + ']"';
+  }
+  if (subs) cmd += ' --write-subs --write-auto-subs';
+  if (!playlist) cmd += ' --no-playlist';
+  if (cookies) cmd += ' --cookies "' + cookies + '"';
+  cmd += ' "' + url + '"';
+  const el = document.getElementById('dl-cmd');
+  if (el) el.textContent = cmd;
+}
+
+function _fmtDuration(sec) {
+  if (!sec) return '';
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  if (h > 0) return h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  return m + ':' + String(s).padStart(2,'0');
+}
+
+async function fetchFormats() {
+  const url = document.getElementById('dl-url').value.trim();
+  if (!url || !capabilities.yt_dlp) return;
+  const status = document.getElementById('dl-fetch-status');
+  const groups = document.getElementById('dl-format-groups');
+  const preview = document.getElementById('dl-preview');
+  if (status) status.innerHTML = '<span class="spin material-symbols-outlined" style="font-size:14px">progress_activity</span>';
+  if (preview) preview.classList.add('hidden');
+  if (groups) groups.classList.add('hidden');
+  try {
+    const r = await fetch('/api/ytdlp/formats?url=' + encodeURIComponent(url));
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      if (status) status.innerHTML = '<span style="color:var(--c-error)">' + (err.detail || 'Error') + '</span>';
+      return;
+    }
+    const d = await r.json();
+
+    // Preview card
+    if (preview && (d.title || d.thumbnail)) {
+      const thumb = document.getElementById('dl-preview-thumb');
+      if (d.thumbnail) { thumb.src = d.thumbnail; thumb.style.display = ''; }
+      else { thumb.style.display = 'none'; }
+      document.getElementById('dl-preview-title').textContent = d.title || '';
+      document.getElementById('dl-preview-uploader').textContent = d.uploader || '';
+      document.getElementById('dl-preview-duration').textContent = _fmtDuration(d.duration);
+      const plChip = document.getElementById('dl-preview-playlist');
+      if (plChip) d.is_playlist ? plChip.classList.remove('hidden') : plChip.classList.add('hidden');
+      preview.classList.remove('hidden');
+    }
+
+    if (!d.formats || !d.formats.length) {
+      if (status) status.textContent = 'フォーマット情報なし';
+      return;
+    }
+
+    _lastFetchedFormats = d.formats;
+    _populateFilterDropdowns(d.formats);
+    _buildAndRenderFormats(d.formats);
+
+    const total = d.formats.filter(f => f.ext !== 'mhtml').length;
+    if (status) status.textContent = total + '件';
+  } catch(e) {
+    if (status) status.innerHTML = '<span style="color:var(--c-error)">' + e.message + '</span>';
+  }
+}
+
+// Populate filter dropdowns from available formats
+function _populateFilterDropdowns(formats) {
+  const heights = new Set(), exts = new Set();
+  for (const f of formats) {
+    if (f.ext === 'mhtml') continue;
+    if (f.height) heights.add(f.height);
+    if (f.ext)    exts.add(f.ext);
+  }
+  const resEl = document.getElementById('dl-filter-res');
+  const extEl = document.getElementById('dl-filter-ext');
+  // preserve current selections
+  const curRes = resEl.value, curExt = extEl.value;
+  resEl.innerHTML = '<option value="">すべて</option>' +
+    [...heights].sort((a,b)=>b-a).map(h=>`<option value="${h}"${curRes==h?' selected':''}>${h}p</option>`).join('');
+  extEl.innerHTML = '<option value="">すべて</option>' +
+    [...exts].sort().map(e=>`<option value="${e}"${curExt==e?' selected':''}>${e}</option>`).join('');
+}
+
+// Build and render format cards filtered by the 3 dropdowns
+function _buildAndRenderFormats(formats) {
+  const groups = document.getElementById('dl-format-groups');
+  if (!groups) return;
+  groups.innerHTML = '';
+
+  const filterRes  = document.getElementById('dl-filter-res')?.value  || '';
+  const filterExt  = document.getElementById('dl-filter-ext')?.value  || '';
+  const filterType = document.getElementById('dl-filter-type')?.value || '';
+
+  // Split, find best audio for pairing
+  const videoFmts = [], audioFmts = [];
+  let bestAudioId = null, bestAudioTbr = 0;
+  for (const f of formats) {
+    if (f.ext === 'mhtml') continue;
+    const hasV = f.vcodec && f.vcodec !== 'none';
+    const hasA = f.acodec && f.acodec !== 'none';
+    if (!hasV && hasA) {
+      audioFmts.push(f);
+      if ((f.tbr||0) > bestAudioTbr) { bestAudioTbr = f.tbr||0; bestAudioId = f.format_id; }
+    } else if (hasV) {
+      videoFmts.push(f);
+    }
+  }
+  videoFmts.sort((a,b) => (b.height||0)-(a.height||0) || (b.tbr||0)-(a.tbr||0));
+  audioFmts.sort((a,b) => (b.tbr||0)-(a.tbr||0));
+
+  const extStyle = {
+    mp4:{ bg:'var(--c-teal-btn)',fg:'var(--c-teal-text)' },
+    webm:{ bg:'var(--c-success-bg)',fg:'var(--c-success)' },
+    m4a:{ bg:'var(--c-error-bg)',fg:'var(--c-error)' },
+    opus:{ bg:'var(--c-error-bg)',fg:'var(--c-error)' },
+    mp3:{ bg:'var(--c-error-bg)',fg:'var(--c-error)' },
+  };
+  const vcName = { vp9:'VP9', avc1:'AVC', av01:'AV1', hvc1:'HEVC', vp8:'VP8' };
+  const acName = { mp4a:'AAC', opus:'Opus', mp3:'MP3', vorbis:'Vorbis' };
+
+  const selectedFmtId = document.getElementById('dl-format-id').value;
+
+  function makeCard(f, fmtId, showPlusAudio) {
+    const card = document.createElement('button');
+    card.className = 'fmt-card' + (fmtId === selectedFmtId ? ' selected' : '');
+    const es = extStyle[f.ext] || { bg:'var(--c-surface-highest)',fg:'var(--c-on-surface-muted)' };
+    const tbrNum = f.tbr || 0;
+    const tbr = tbrNum >= 1000 ? (tbrNum/1000).toFixed(1)+'M' : (tbrNum ? Math.round(tbrNum)+'k' : '');
+    const vc = (f.vcodec||'').split('.')[0];
+    const ac = (f.acodec||'').split('.')[0];
+    const codec = vcName[vc] || acName[ac] || '';
+    card.innerHTML =
+      `<div class="flex items-center justify-center gap-1 mb-1 flex-wrap">` +
+      `<span class="chip" style="background:${es.bg};color:${es.fg}">${f.ext}</span>` +
+      (codec ? `<span class="text-xs text-on-surface-variant">${codec}</span>` : '') +
+      `</div>` +
+      (tbr ? `<div class="text-xs text-on-surface-variant">${tbr}</div>` : '') +
+      `<div class="font-mono mt-0.5" style="font-size:10px;color:var(--c-on-surface-muted)">${f.format_id}</div>` +
+      (showPlusAudio ? `<div style="font-size:9px;color:var(--c-on-surface-muted);margin-top:2px">+audio</div>` : '');
+    card.onclick = () => {
+      document.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      document.getElementById('dl-format-id').value = fmtId;
+      const badge = document.getElementById('dl-fmt-badge');
+      document.getElementById('dl-fmt-badge-id').textContent = fmtId;
+      badge.classList.remove('hidden');
+      badge.style.display = 'flex';
+      dlUpdate();
+    };
+    return card;
+  }
+
+  // Apply type filter and group video by height
+  const showVideo = filterType !== 'audio';
+  const showAudio = filterType !== 'video';
+
+  if (showVideo) {
+    const byHeight = new Map();
+    for (const f of videoFmts) {
+      if (filterRes  && String(f.height) !== filterRes)  continue;
+      if (filterExt  && f.ext !== filterExt)              continue;
+      const h = f.height || 0;
+      if (!byHeight.has(h)) byHeight.set(h, []);
+      byHeight.get(h).push(f);
+    }
+    for (const [h, fmts] of [...byHeight.entries()].sort((a,b)=>b[0]-a[0])) {
+      const label = h ? h + 'p' : '?';
+      const sec = document.createElement('div');
+      const hdr = document.createElement('div');
+      hdr.className = 'flex items-center gap-1.5 mb-2';
+      hdr.innerHTML =
+        `<span class="material-symbols-outlined fill-icon text-primary" style="font-size:14px">movie</span>` +
+        `<span class="text-xs font-semibold text-on-surface-variant">${label}</span>`;
+      const row = document.createElement('div');
+      row.className = 'flex flex-wrap gap-2';
+      for (const f of fmts) {
+        const isVideoOnly = !f.acodec || f.acodec === 'none';
+        const fmtId = isVideoOnly && bestAudioId ? f.format_id + '+' + bestAudioId : f.format_id;
+        row.appendChild(makeCard(f, fmtId, isVideoOnly && !!bestAudioId));
+      }
+      sec.appendChild(hdr); sec.appendChild(row);
+      groups.appendChild(sec);
+    }
+  }
+
+  if (showAudio && audioFmts.length) {
+    const filteredAudio = audioFmts.filter(f =>
+      (!filterExt || f.ext === filterExt)
+    );
+    if (filteredAudio.length) {
+      const sec = document.createElement('div');
+      const hdr = document.createElement('div');
+      hdr.className = 'flex items-center gap-1.5 mb-2';
+      hdr.innerHTML =
+        `<span class="material-symbols-outlined fill-icon text-secondary" style="font-size:14px">audio_file</span>` +
+        `<span class="text-xs font-semibold text-on-surface-variant">音声のみ</span>`;
+      const row = document.createElement('div');
+      row.className = 'flex flex-wrap gap-2';
+      for (const f of filteredAudio) row.appendChild(makeCard(f, f.format_id, false));
+      sec.appendChild(hdr); sec.appendChild(row);
+      groups.appendChild(sec);
+    }
+  }
+
+  if (!groups.children.length) {
+    groups.innerHTML = '<p class="text-xs text-on-surface-variant text-center py-3">条件に一致するフォーマットがありません</p>';
+  }
+  groups.classList.remove('hidden');
+}
+
+function clearFormatId() {
+  document.getElementById('dl-format-id').value = '';
+  document.getElementById('dl-fmt-badge').classList.add('hidden');
+  document.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('selected'));
+  dlUpdate();
+}
+
+async function startDownload() {
+  if (!capabilities.yt_dlp) { alert('yt-dlp が見つかりません'); return; }
+  const url = document.getElementById('dl-url').value.trim();
+  if (!url) { alert('URLを入力してください'); return; }
+  const outdir = capabilities.downloads_dir || '/tmp';
+  const quality = document.getElementById('dl-quality').value;
+  const fmtId = document.getElementById('dl-format-id').value.trim();
+  const params = {
+    quality,
+    format: fmtId,
+    audio_format: document.getElementById('dl-audio-fmt').value,
+    subtitles: document.getElementById('tog-dl-subs').classList.contains('on'),
+    playlist: document.getElementById('tog-dl-playlist').classList.contains('on'),
+    cookies_file: document.getElementById('dl-cookies').value.trim(),
+  };
+  await createJob('ytdlp_download', url, outdir, params);
+  showView('queue');
+}
+
+
+
+
+// ══ Theme ══════════════════════════════════════════════════════════════════════
+function setTheme(mode) {
+  if (mode === 'system') localStorage.removeItem('mf-theme');
+  else localStorage.setItem('mf-theme', mode);
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isLight = mode === 'light' || (mode === 'system' && !prefersDark);
+  document.documentElement.classList.toggle('light', isLight);
+  _updateThemeButtons(mode);
+}
+
+function _updateThemeButtons(mode) {
+  const current = mode || localStorage.getItem('mf-theme') || 'system';
+  ['system', 'light', 'dark'].forEach(m => {
+    const btn = document.getElementById('theme-btn-' + m);
+    if (!btn) return;
+    const isActive = m === current;
+    btn.style.background = isActive ? 'var(--c-primary)' : '';
+    btn.style.color = isActive ? 'var(--c-on-primary)' : '';
+  });
+}
+
+// ══ File Picker ═══════════════════════════════════════════════════════════════
+let _fpField = null;
+let _fpFilter = null;
+let _fpCallback = null;
+let _fpTab = 'uploads';
+let _fpMulti = false;
+let _fpFiles = {};
+
+function openFilePicker(fieldId, filter, callback, multi) {
+  _fpField = fieldId;
+  _fpFilter = filter || null;
+  _fpCallback = callback;
+  _fpTab = 'uploads';
+  _fpMulti = !!multi;
+  _fpFiles = {};
+  _updateFpTabs();
+  const tabs = document.getElementById('fp-tabs');
+  if (tabs) tabs.classList.toggle('hidden', _fpMulti);
+  const bar = document.getElementById('fp-confirm-bar');
+  if (bar) bar.classList.toggle('hidden', !_fpMulti);
+  if (_fpMulti) _updateFpConfirmBar();
+  document.getElementById('fp-modal').classList.remove('hidden');
+  _loadFpList();
+}
+
+function closeFilePicker() {
+  document.getElementById('fp-modal').classList.add('hidden');
+}
+
+function setFpTab(tab) {
+  _fpTab = tab;
+  _updateFpTabs();
+  _loadFpList();
+}
+
+function _updateFpTabs() {
+  ['uploads','outputs'].forEach(t => {
+    const btn = document.getElementById('fp-tab-btn-' + t);
+    if (!btn) return;
+    btn.style.background = t === _fpTab ? 'var(--c-secondary-cont)' : '';
+    btn.style.color = t === _fpTab ? 'var(--c-on-secondary-cont)' : '';
+  });
+}
+
+function _applyFpFilter(files) {
+  if (!_fpFilter) return files;
+  const types = _fpFilter.split(',');
+  return files.filter(f =>
+    (types.includes('video') && f.is_video) ||
+    (types.includes('audio') && !f.is_video && !f.is_image) ||
+    (types.includes('image') && f.is_image)
+  );
+}
+
+function _makeFpRow(f) {
+  const row = document.createElement('div');
+  row.className = 'card p-3 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition-transform';
+  const icon = f.is_video ? 'movie' : f.is_image ? 'image' : 'audio_file';
+  const iconColor = f.is_video ? 'text-primary' : f.is_image ? 'text-tertiary' : 'text-secondary';
+  const mid =
+    '<span class="material-symbols-outlined ' + iconColor + ' text-xl flex-shrink-0">' + icon + '</span>' +
+    '<div class="flex-1 min-w-0">' +
+      '<p class="text-sm font-medium text-on-surface truncate">' + f.name + '</p>' +
+      '<p class="text-xs text-on-surface-variant font-mono">' + formatSize(f.size) + '</p>' +
+    '</div>';
+  if (_fpMulti) {
+    const checked = !!_fpFiles[f.path];
+    row.innerHTML = mid + '<div class="fp-cb' + (checked ? ' checked' : '') + '" id="fp-cb-' + encodeURIComponent(f.path) + '"></div>';
+    row.onclick = () => _toggleFpFile(f);
+  } else {
+    row.innerHTML = mid + '<span class="material-symbols-outlined text-on-surface-variant text-base flex-shrink-0">chevron_right</span>';
+    row.onclick = () => _selectFpFile(f.path, f.name);
+  }
+  return row;
+}
+
+async function _loadFpList() {
+  const el = document.getElementById('fp-list');
+  el.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-8">読み込み中...</p>';
+  try {
+    if (_fpMulti) {
+      const [r1, r2] = await Promise.all([fetch('/api/uploads'), fetch('/api/output-files')]);
+      const uploads = _applyFpFilter(r1.ok ? await r1.json() : []);
+      const outputs = _applyFpFilter(r2.ok ? await r2.json() : []);
+      el.innerHTML = '';
+      const groups = [
+        { label: 'アップロード', files: uploads },
+        { label: '出力ファイル', files: outputs },
+      ];
+      let hasAny = false;
+      for (const g of groups) {
+        if (!g.files.length) continue;
+        hasAny = true;
+        const header = document.createElement('p');
+        header.className = 'label uppercase px-1 pt-2 pb-1';
+        header.textContent = g.label;
+        el.appendChild(header);
+        for (const f of g.files) el.appendChild(_makeFpRow(f));
+      }
+      if (!hasAny) {
+        el.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-8">ファイルがありません</p>' +
+          '<p class="text-xs text-on-surface-variant text-center">「アップロード」ボタンで追加できます</p>';
+      }
+    } else {
+      const url = _fpTab === 'uploads' ? '/api/uploads' : '/api/output-files';
+      const r = await fetch(url);
+      if (!r.ok) throw new Error();
+      const files = _applyFpFilter(await r.json());
+      if (!files.length) {
+        el.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-8">' +
+          (_fpTab === 'uploads' ? 'アップロードされたファイルがありません' : '出力ファイルがありません') +
+          '</p><p class="text-xs text-on-surface-variant text-center">「アップロード」ボタンで追加できます</p>';
+        return;
+      }
+      el.innerHTML = '';
+      for (const f of files) el.appendChild(_makeFpRow(f));
+    }
+  } catch(e) {
+    el.innerHTML = '<p class="text-sm text-error text-center py-8">読み込みエラー</p>';
+  }
+}
+
+function _setPickerDisplayName(fieldId, name) {
+  const nameEl = document.getElementById(fieldId + '-name');
+  if (nameEl) {
+    nameEl.textContent = name;
+    nameEl.classList.remove('text-on-surface-variant');
+    nameEl.classList.add('text-on-surface');
+  }
+}
+
+function _selectFpFile(path, name) {
+  if (!_fpField) return;
+  document.getElementById(_fpField).value = path;
+  _setPickerDisplayName(_fpField, name);
+  closeFilePicker();
+  if (_fpCallback) _fpCallback([{path, name}]);
+}
+
+function _toggleFpFile(f) {
+  const key = f.path;
+  if (_fpFiles[key]) {
+    delete _fpFiles[key];
+  } else {
+    _fpFiles[key] = f;
+  }
+  const cbEl = document.getElementById('fp-cb-' + encodeURIComponent(f.path));
+  if (cbEl) cbEl.classList.toggle('checked', !!_fpFiles[key]);
+  _updateFpConfirmBar();
+}
+
+function _updateFpConfirmBar() {
+  const count = Object.keys(_fpFiles).length;
+  const el = document.getElementById('fp-select-count');
+  if (el) el.textContent = count + ' 件選択中';
+}
+
+function confirmFpSelection() {
+  const files = Object.values(_fpFiles);
+  if (!files.length) return;
+  closeFilePicker();
+  if (_fpCallback) _fpCallback(files);
+}
+
+function triggerFpUpload() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.multiple = true;
+  if (_fpFilter) {
+    if (_fpFilter.includes('image')) input.accept = 'image/*';
+    else input.accept = 'video/*,audio/*,.mkv,.avi,.mov,.mp4,.webm,.flv,.ts,.mts,.wmv';
+  }
+  input.onchange = async e => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    const progressDiv = document.getElementById('fp-upload-progress');
+    const nameEl2 = document.getElementById('fp-upload-name');
+    const pctEl = document.getElementById('fp-upload-pct');
+    const barEl = document.getElementById('fp-upload-bar');
+    progressDiv.classList.remove('hidden');
+    let lastResult = null;
+    for (const file of files) {
+      if (nameEl2) nameEl2.textContent = file.name;
+      if (pctEl) pctEl.textContent = '0%';
+      if (barEl) barEl.style.width = '0%';
+      const result = await _fpUploadOne(file, pctEl, barEl);
+      if (result) lastResult = result;
+    }
+    progressDiv.classList.add('hidden');
+    if (files.length === 1 && lastResult) {
+      _selectFpFile(lastResult.path, lastResult.name);
+    } else {
+      _fpTab = 'uploads';
+      _updateFpTabs();
+      _loadFpList();
+    }
+    refreshUploads();
+  };
+  input.click();
+}
+
+function _fpUploadOne(file, pctEl, barEl) {
+  return new Promise(resolve => {
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+    fd.append('file', file);
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        if (barEl) barEl.style.width = pct + '%';
+        if (pctEl) pctEl.textContent = pct + '%';
+      }
+    };
+    xhr.onload = () => {
+      if (pctEl) pctEl.textContent = xhr.status === 200 ? '✓' : '✗';
+      try { resolve(xhr.status === 200 ? JSON.parse(xhr.responseText) : null); } catch { resolve(null); }
+    };
+    xhr.onerror = () => resolve(null);
+    xhr.open('POST', '/api/upload');
+    xhr.send(fd);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════ Init
+convUpdate();
+setQualityMode('crf');
+
+// System stats polling
+refreshStats();
+setInterval(refreshStats, 3000);
+
+// Queue polling
+refreshQueue();
+setInterval(refreshQueue, 2000);
+
+// Load capabilities on startup
+loadCapabilities();
+// Apply initial theme button state
+_updateThemeButtons(localStorage.getItem('mf-theme') || 'system');
+// Watch for system color scheme changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (!localStorage.getItem('mf-theme')) {
+    document.documentElement.classList.toggle('light', !e.matches);
+    _updateThemeButtons('system');
+  }
+});
+// Update image command preview
+imgUpdate();
+// Update download command preview
+dlUpdate();
+// Initial files load
+refreshOutputFiles();
+refreshUploads();
+
+// Preview modal
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closePreview(); closeFilePicker(); } });
+
+function openPreview(pathEnc, nameEnc, isVideo, isImage) {
+  const path = decodeURIComponent(pathEnc);
+  const name = decodeURIComponent(nameEnc);
+  const modal = document.getElementById('preview-modal');
+  const content = document.getElementById('preview-modal-content');
+  document.getElementById('preview-modal-name').textContent = name;
+  const dl = document.getElementById('preview-modal-dl');
+  dl.href = '/api/download?path=' + pathEnc;
+  dl.download = name;
+
+  const src = '/api/media?path=' + pathEnc;
+  if (isVideo) {
+    content.innerHTML = `<video controls autoplay class="rounded-lg" style="max-width:100%;max-height:calc(100vh - 100px);outline:none" onerror="this.outerHTML='<p class=\\'text-on-surface-variant text-sm text-center\\'>このフォーマットはブラウザで再生できません。ダウンロードしてご確認ください。</p>'">
+      <source src="${src}">
+      <p class="text-on-surface-variant text-sm text-center">このフォーマットはブラウザで再生できません。</p>
+    </video>`;
+  } else if (isImage) {
+    content.innerHTML = `<img src="${src}" alt="${name}" class="rounded-lg" style="max-width:100%;max-height:calc(100vh - 100px);object-fit:contain"/>`;
+  } else {
+    content.innerHTML = `<div class="text-center space-y-5">
+      <span class="material-symbols-outlined fill-icon text-secondary" style="font-size:72px">audio_file</span>
+      <p class="text-sm text-on-surface font-medium">${name}</p>
+      <audio controls autoplay style="width:320px;max-width:90vw"><source src="${src}"></audio>
+    </div>`;
+  }
+
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+  const modal = document.getElementById('preview-modal');
+  if (modal.classList.contains('hidden')) return;
+  document.getElementById('preview-modal-content').innerHTML = '';
+  modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════════════════════════════════════════ File Info
+async function openFileInfo(pathEnc) {
+  const path = decodeURIComponent(pathEnc);
+  const modal = document.getElementById('fi-modal');
+  const content = document.getElementById('fi-content');
+  document.getElementById('fi-name').textContent = path.split('/').pop();
+  document.getElementById('fi-meta').textContent = '';
+  document.getElementById('fi-icon').textContent = 'description';
+  content.innerHTML = '<p class="text-sm text-on-surface-variant text-center py-8">読み込み中...</p>';
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  try {
+    const r = await fetch('/api/file-info?path=' + encodeURIComponent(path));
+    if (!r.ok) throw new Error('fetch failed');
+    const d = await r.json();
+    _renderFileInfo(d);
+  } catch(e) {
+    content.innerHTML = '<p class="text-sm text-error text-center py-8">情報の取得に失敗しました</p>';
+  }
+}
+
+function closeFileInfo() {
+  document.getElementById('fi-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function _renderFileInfo(d) {
+  // Update header
+  const icon = d.is_video ? 'movie' : d.is_image ? 'image' : 'audio_file';
+  document.getElementById('fi-icon').textContent = icon;
+  document.getElementById('fi-name').textContent = d.name;
+  const mtime = new Date(d.mtime * 1000).toLocaleString('ja-JP');
+  document.getElementById('fi-meta').textContent = formatSize(d.size) + ' · ' + mtime;
+
+  const rows = [];
+
+  // ── Basic file info ──────────────────────────────────────────────
+  rows.push(_fiSection('基本情報', [
+    ['ファイル名', d.name],
+    ['サイズ', formatSize(d.size)],
+    ['更新日時', mtime],
+    ['パス', d.path],
+  ]));
+
+  // ── Media info from ffprobe ──────────────────────────────────────
+  const mi = d.media_info;
+  if (mi) {
+    const fmt = mi.format || {};
+    const streams = mi.streams || [];
+    const vStream = streams.find(s => s.codec_type === 'video');
+    const aStream = streams.find(s => s.codec_type === 'audio');
+
+    const mediaRows = [];
+    if (fmt.duration) mediaRows.push(['再生時間', _fmtDuration(parseFloat(fmt.duration))]);
+    if (fmt.bit_rate) mediaRows.push(['ビットレート', Math.round(fmt.bit_rate / 1000) + ' kbps']);
+    if (fmt.format_long_name) mediaRows.push(['フォーマット', fmt.format_long_name]);
+
+    if (vStream) {
+      mediaRows.push(['映像コーデック', (vStream.codec_long_name || vStream.codec_name || '')]);
+      if (vStream.width && vStream.height) mediaRows.push(['解像度', vStream.width + ' × ' + vStream.height]);
+      if (vStream.avg_frame_rate && vStream.avg_frame_rate !== '0/0') {
+        const parts = vStream.avg_frame_rate.split('/');
+        const fps = parts.length === 2 ? (parseFloat(parts[0]) / parseFloat(parts[1])).toFixed(2) : vStream.avg_frame_rate;
+        mediaRows.push(['フレームレート', fps + ' fps']);
+      }
+      if (vStream.pix_fmt) mediaRows.push(['ピクセルフォーマット', vStream.pix_fmt]);
+      if (vStream.bit_rate) mediaRows.push(['映像ビットレート', Math.round(vStream.bit_rate / 1000) + ' kbps']);
+    }
+    if (aStream) {
+      mediaRows.push(['音声コーデック', (aStream.codec_long_name || aStream.codec_name || '')]);
+      if (aStream.sample_rate) mediaRows.push(['サンプルレート', parseInt(aStream.sample_rate).toLocaleString() + ' Hz']);
+      if (aStream.channels) mediaRows.push(['チャンネル数', aStream.channels + ' ch' + (aStream.channel_layout ? ' (' + aStream.channel_layout + ')' : '')]);
+      if (aStream.bit_rate) mediaRows.push(['音声ビットレート', Math.round(aStream.bit_rate / 1000) + ' kbps']);
+    }
+    if (mediaRows.length) rows.push(_fiSection('メディア情報', mediaRows));
+  }
+
+  // ── Job provenance ───────────────────────────────────────────────
+  const job = d.job;
+  if (job && job.type) {
+    const provRows = [];
+    const typeLabels = {
+      convert: '変換', trim: 'トリム', crop: 'クロップ',
+      image_resize: 'リサイズ', image_convert: 'フォーマット変換', image_compress: '圧縮',
+      ytdlp_download: 'ダウンロード',
+    };
+    provRows.push(['処理種別', typeLabels[job.type] || job.type]);
+    if (job.tool) provRows.push(['ツール', job.tool]);
+
+    const inp = job.input_path || '';
+    if (inp) provRows.push(['ソースファイル', inp.split('/').pop()]);
+
+    const p = job.params || {};
+    if (job.type === 'convert') {
+      if (p.vcodec) provRows.push(['映像コーデック', p.vcodec]);
+      if (p.acodec) provRows.push(['音声コーデック', p.acodec]);
+      if (p.crf != null) provRows.push(['品質 (CRF)', p.crf]);
+      if (p.bitrate) provRows.push(['映像ビットレート', p.bitrate]);
+      if (p.resolution) provRows.push(['出力解像度', p.resolution]);
+    } else if (job.type === 'trim') {
+      if (p.start != null) provRows.push(['開始', p.start]);
+      if (p.end) provRows.push(['終了', p.end]);
+      if (p.accurate != null) provRows.push(['精密モード', p.accurate ? 'あり' : 'なし']);
+    } else if (job.type === 'crop') {
+      if (p.w && p.h) provRows.push(['切り取りサイズ', p.w + ' × ' + p.h]);
+      if (p.x != null && p.y != null) provRows.push(['切り取り位置', 'X:' + p.x + ' Y:' + p.y]);
+      if (p.scale) provRows.push(['スケール', p.scale]);
+    } else if (job.type === 'image_resize') {
+      const dims = [p.width && 'W:' + p.width, p.height && 'H:' + p.height].filter(Boolean).join('  ');
+      if (dims) provRows.push(['出力サイズ', dims]);
+      if (p.keep_aspect != null) provRows.push(['アスペクト比維持', p.keep_aspect ? 'あり' : 'なし']);
+    } else if (job.type === 'image_convert' || job.type === 'image_compress') {
+      if (p.quality != null) provRows.push(['品質', p.quality]);
+      if (p.strip_metadata != null) provRows.push(['メタデータ削除', p.strip_metadata ? 'あり' : 'なし']);
+    } else if (job.type === 'ytdlp_download') {
+      provRows.push(['URL', inp]);
+      if (p.quality) provRows.push(['品質プリセット', p.quality]);
+      if (p.format) provRows.push(['フォーマット', p.format]);
+      if (p.subtitles) provRows.push(['字幕', 'あり']);
+    }
+    if (job.id) provRows.push(['ジョブ ID', job.id]);
+
+    rows.push(_fiSection('処理履歴', provRows));
+
+    // Collapsible command
+    if (job.command) {
+      const cmdId = 'fi-cmd-' + Math.random().toString(36).slice(2,6);
+      rows.push(`
+        <div>
+          <button onclick="document.getElementById('${cmdId}').classList.toggle('hidden')"
+                  class="text-xs text-primary flex items-center gap-1 mb-1">
+            <span class="material-symbols-outlined text-sm">terminal</span>実行コマンド
+          </button>
+          <div id="${cmdId}" class="hidden code-block text-xs break-all">${_escHtml(job.command)}</div>
+        </div>`);
+    }
+  }
+
+  document.getElementById('fi-content').innerHTML = rows.join('');
+}
+
+function _fiSection(title, rows) {
+  const cells = rows.map(([k, v]) => `
+    <div class="flex gap-3 py-2" style="border-bottom:1px solid var(--c-outline-var)">
+      <span class="text-xs text-on-surface-variant flex-shrink-0 w-32">${k}</span>
+      <span class="text-xs text-on-surface font-mono break-all">${_escHtml(String(v))}</span>
+    </div>`).join('');
+  return `
+    <div>
+      <p class="label uppercase mb-2">${title}</p>
+      <div class="card-low rounded-xl px-3">${cells}</div>
+    </div>`;
+}
+
+function _fmtDuration(sec) {
+  if (!sec || isNaN(sec)) return '--';
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  return h ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function _escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+
+<!-- Preview Modal -->
+
+<!-- ═══════════════════════════════ FILE PICKER MODAL -->
+<div id="fp-modal" class="hidden fixed inset-0 z-50 flex flex-col" style="background:var(--c-modal-bg)">
+  <div class="flex items-center gap-3 px-4 py-3 flex-shrink-0" style="border-bottom:1px solid var(--c-outline-var)">
+    <button onclick="closeFilePicker()" class="h-9 w-9 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+      <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+    </button>
+    <p class="text-sm font-semibold text-on-surface flex-1">ファイルを選択</p>
+    <button onclick="triggerFpUpload()" class="btn-secondary px-3 h-9 text-xs flex items-center gap-1">
+      <span class="material-symbols-outlined text-base">upload</span>
+      アップロード
+    </button>
+  </div>
+  <div id="fp-tabs" class="flex gap-1 px-4 pt-3 pb-1 flex-shrink-0">
+    <button id="fp-tab-btn-uploads" onclick="setFpTab('uploads')" class="px-4 py-2 rounded-full text-xs font-medium transition-colors">アップロード</button>
+    <button id="fp-tab-btn-outputs" onclick="setFpTab('outputs')" class="px-4 py-2 rounded-full text-xs font-medium transition-colors">出力ファイル</button>
+  </div>
+  <div id="fp-list" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+  <div id="fp-confirm-bar" class="hidden px-4 py-3 flex-shrink-0 flex items-center justify-between gap-3" style="border-top:1px solid var(--c-outline-var)">
+    <span id="fp-select-count" class="text-sm text-on-surface-variant">0 件選択中</span>
+    <button onclick="confirmFpSelection()" class="btn-primary flex items-center gap-2 px-5 h-9 text-sm">
+      <span class="material-symbols-outlined text-base">check</span>確定
+    </button>
+  </div>
+  <div id="fp-upload-progress" class="hidden px-4 py-3 flex-shrink-0" style="border-top:1px solid var(--c-outline-var)">
+    <div class="flex justify-between text-xs font-mono mb-1">
+      <span id="fp-upload-name" class="text-on-surface-variant truncate mr-4"></span>
+      <span id="fp-upload-pct" class="text-primary flex-shrink-0">0%</span>
+    </div>
+    <div class="upload-progress-bar"><div id="fp-upload-bar" class="upload-progress-fill"></div></div>
+  </div>
+</div>
+
+<div id="preview-modal" class="hidden fixed inset-0 z-50 flex flex-col"
+     style="background:var(--c-modal-bg)"
+     onclick="if(event.target===this)closePreview()">
+  <div class="flex items-center gap-3 px-4 py-3 flex-shrink-0" style="border-bottom:1px solid var(--c-outline-var)">
+    <button onclick="closePreview()" class="flex items-center justify-center w-9 h-9 rounded-xl hover:bg-surface-container transition-colors flex-shrink-0">
+      <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+    </button>
+    <p id="preview-modal-name" class="flex-1 text-sm font-medium text-on-surface truncate"></p>
+    <a id="preview-modal-dl" href="#" class="btn-secondary flex items-center gap-1 px-3 h-9 text-xs" style="text-decoration:none">
+      <span class="material-symbols-outlined text-sm">download</span>Save
+    </a>
+  </div>
+  <div id="preview-modal-content" class="flex-1 flex items-center justify-center p-4" style="min-height:0"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ FILE INFO MODAL -->
+<div id="fi-modal" class="hidden fixed inset-0 z-50 flex items-end lg:items-center lg:justify-center"
+     style="background:rgba(0,0,0,0.55)" onclick="if(event.target===this)closeFileInfo()">
+  <div class="w-full lg:max-w-lg bg-surface rounded-t-2xl lg:rounded-2xl flex flex-col" style="max-height:88vh">
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-4 py-3 flex-shrink-0" style="border-bottom:1px solid var(--c-outline-var)">
+      <span id="fi-icon" class="material-symbols-outlined text-primary text-2xl flex-shrink-0">description</span>
+      <div class="flex-1 min-w-0">
+        <p id="fi-name" class="text-sm font-semibold text-on-surface truncate"></p>
+        <p id="fi-meta" class="text-xs text-on-surface-variant font-mono"></p>
+      </div>
+      <button onclick="closeFileInfo()" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors flex-shrink-0">
+        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+      </button>
+    </div>
+    <!-- Scrollable content -->
+    <div id="fi-content" class="flex-1 overflow-y-auto p-4 space-y-4">
+      <p class="text-sm text-on-surface-variant text-center py-8">読み込み中...</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
