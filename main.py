@@ -688,6 +688,34 @@ def _build_ffmpeg_cmd(job_type: str, inp: str, out: str, p: dict) -> list:
 
         cmd.append(out)
 
+    elif job_type == "video_to_gif":
+        start = p.get("start", "")
+        duration = p.get("duration", "")
+        fps = int(p.get("fps", 12))
+        width = p.get("width", 480)
+        loop = int(p.get("loop", 0))
+        optimize = p.get("optimize_palette", True)
+
+        # Place -ss/-t before -i as input options so ffmpeg stops decoding
+        # after the requested segment — critical for palettegen which would
+        # otherwise scan the entire file before writing any output.
+        if start:
+            cmd += ["-ss", start]
+        if duration:
+            cmd += ["-t", duration]
+        cmd += ["-i", inp]
+
+        scale_filter = f"fps={fps}"
+        if width and str(width) != "0":
+            scale_filter += f",scale={width}:-1:flags=lanczos"
+
+        if optimize:
+            vf = f"{scale_filter},split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"
+        else:
+            vf = scale_filter
+
+        cmd += ["-vf", vf, "-loop", str(loop), out]
+
     return cmd
 
 

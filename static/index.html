@@ -365,6 +365,9 @@ select { background-image:none; }
         <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill">
           <span class="material-symbols-outlined text-base">crop</span>Crop
         </button>
+        <button onclick="showView('gif')" data-vidop="gif" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">gif</span>GIF
+        </button>
       </div>
     </section>
 
@@ -516,6 +519,9 @@ select { background-image:none; }
         <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill">
           <span class="material-symbols-outlined text-base">crop</span>Crop
         </button>
+        <button onclick="showView('gif')" data-vidop="gif" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">gif</span>GIF
+        </button>
       </div>
     </section>
 
@@ -622,6 +628,9 @@ select { background-image:none; }
         <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill active">
           <span class="material-symbols-outlined text-base">crop</span>Crop
         </button>
+        <button onclick="showView('gif')" data-vidop="gif" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">gif</span>GIF
+        </button>
       </div>
     </section>
 
@@ -711,6 +720,116 @@ select { background-image:none; }
     <button id="crop-start-btn" onclick="startCrop()" class="btn-primary h-14 text-base font-semibold w-full hidden">
       <span class="material-symbols-outlined fill-icon">crop</span>
       Apply Crop
+    </button>
+  </div>
+
+  <!-- ─────────────── GIF ──────────────────────────────────────────── -->
+  <div id="view-gif" class="view p-4 gap-4">
+    <h2 class="text-lg font-semibold text-primary">Video</h2>
+    <section>
+      <p class="label uppercase mb-2">Operation</p>
+      <div class="flex gap-2 flex-wrap">
+        <button onclick="showView('convert')" data-vidop="convert" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">sync</span>Convert
+        </button>
+        <button onclick="showView('trim')" data-vidop="trim" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">content_cut</span>Trim
+        </button>
+        <button onclick="showView('crop')" data-vidop="crop" class="vidop-pill op-pill">
+          <span class="material-symbols-outlined text-base">crop</span>Crop
+        </button>
+        <button onclick="showView('gif')" data-vidop="gif" class="vidop-pill op-pill active">
+          <span class="material-symbols-outlined text-base">gif</span>GIF
+        </button>
+      </div>
+    </section>
+
+    <!-- Input -->
+    <section>
+      <p class="label uppercase mb-1">Input File</p>
+      <div id="gif-input-display" onclick="openFilePicker('gif-input','video',gifFilesChanged,true)"
+           class="card-low rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-surface-container-highest transition-colors select-none">
+        <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0">video_file</span>
+        <span id="gif-input-name" class="text-sm text-on-surface-variant flex-1 truncate">選択なし</span>
+        <span class="material-symbols-outlined text-on-surface-variant text-base flex-shrink-0">chevron_right</span>
+      </div>
+      <input id="gif-input" type="hidden"/>
+    </section>
+
+    <!-- Timing -->
+    <section class="grid grid-cols-2 gap-3">
+      <div>
+        <p class="label uppercase mb-1">開始時間</p>
+        <input id="gif-start" class="input-field font-mono" placeholder="00:00:00" oninput="gifUpdate()"/>
+      </div>
+      <div>
+        <p class="label uppercase mb-1">長さ (秒)</p>
+        <input id="gif-duration" class="input-field font-mono" placeholder="5" oninput="gifUpdate()"/>
+      </div>
+    </section>
+
+    <!-- FPS & Width -->
+    <section class="card-low p-4 space-y-4">
+      <div>
+        <div class="flex justify-between mb-1">
+          <span class="text-sm text-on-surface">FPS</span>
+          <span id="gif-fps-val" class="text-sm font-mono text-primary bg-primary-container/20 px-2 rounded-full">12</span>
+        </div>
+        <input type="range" id="gif-fps" min="1" max="30" value="12" class="w-full"
+               style="background:linear-gradient(to right,var(--c-primary) 37%,var(--c-surface-highest) 37%)"
+               oninput="gifFpsChanged(this)"/>
+        <div class="flex justify-between text-xs text-on-surface-variant mt-1"><span>1</span><span>30</span></div>
+      </div>
+      <div>
+        <p class="label uppercase mb-1">幅 (px)</p>
+        <div class="relative">
+          <select id="gif-width" class="select-field pr-8" onchange="gifUpdate()">
+            <option value="0">オリジナル</option>
+            <option value="160">160px</option>
+            <option value="320">320px</option>
+            <option value="480" selected>480px</option>
+            <option value="640">640px</option>
+            <option value="800">800px</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+      <div>
+        <p class="label uppercase mb-1">ループ</p>
+        <div class="relative">
+          <select id="gif-loop" class="select-field pr-8" onchange="gifUpdate()">
+            <option value="0">無限ループ</option>
+            <option value="1">1回</option>
+            <option value="3">3回</option>
+            <option value="5">5回</option>
+          </select>
+          <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-base">arrow_drop_down</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Options -->
+    <section class="space-y-1">
+      <div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container transition-colors">
+        <div>
+          <p class="text-sm text-on-surface">パレット最適化</p>
+          <p class="text-xs text-on-surface-variant">高品質GIF (処理時間が増加)</p>
+        </div>
+        <div class="toggle on" id="tog-gif-palette" onclick="toggleEl('tog-gif-palette'); gifUpdate()">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Command preview -->
+    <section>
+      <p class="label uppercase mb-1">FFmpeg Command</p>
+      <div id="gif-cmd" class="code-block text-xs">ffmpeg ...</div>
+    </section>
+
+    <button onclick="startGif()" class="btn-primary h-14 text-base font-semibold w-full">
+      <span class="material-symbols-outlined fill-icon">gif</span>
+      GIF に変換
     </button>
   </div>
 
@@ -1213,7 +1332,7 @@ function showView(name) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.snav-item').forEach(n => n.classList.remove('active'));
   // Video op pills: active on convert/trim/crop, hidden on others
-  const videoViews = new Set(['convert', 'trim', 'crop']);
+  const videoViews = new Set(['convert', 'trim', 'crop', 'gif']);
   document.querySelectorAll('.vidop-pill').forEach(p => p.classList.toggle('active', p.dataset.vidop === name));
   // Bottom nav + sidebar highlight 'convert' for all video sub-views
   const navName = videoViews.has(name) ? 'convert' : name;
@@ -2577,6 +2696,84 @@ function setQueueFilter(filter) {
 }
 
 // ══ Image processing ══════════════════════════════════════════════════════════
+// ══ GIF conversion ═══════════════════════════════════════════════════════════
+
+let gifFiles = [];
+
+function gifFilesChanged(files) {
+  gifFiles = files;
+  const inp = document.getElementById('gif-input');
+  if (inp && files.length) inp.value = files[0].path;
+  const nameEl = document.getElementById('gif-input-name');
+  if (nameEl) {
+    nameEl.textContent = files.length === 1 ? files[0].name : files.length + ' ファイル選択中';
+    nameEl.classList.remove('text-on-surface-variant');
+    nameEl.classList.add('text-on-surface');
+  }
+  gifUpdate();
+}
+
+function gifFpsChanged(el) {
+  const v = el.value;
+  document.getElementById('gif-fps-val').textContent = v;
+  const pct = ((v - 1) / 29 * 100).toFixed(1);
+  el.style.background = `linear-gradient(to right,var(--c-primary) ${pct}%,var(--c-surface-highest) ${pct}%)`;
+  gifUpdate();
+}
+
+function gifUpdate() {
+  const inp  = document.getElementById('gif-input').value.trim() || 'input.mp4';
+  const out  = (capabilities.outputs_dir || '/tmp') + '/output_' + Date.now() + '.gif';
+  const start    = document.getElementById('gif-start').value.trim();
+  const duration = document.getElementById('gif-duration').value.trim();
+  const fps      = document.getElementById('gif-fps').value;
+  const width    = document.getElementById('gif-width').value;
+  const loop     = document.getElementById('gif-loop').value;
+  const palette  = document.getElementById('tog-gif-palette').classList.contains('on');
+
+  let cmd = 'ffmpeg -y';
+  if (start) cmd += ' -ss ' + start;
+  cmd += ' -i "' + inp + '"';
+  if (duration) cmd += ' -t ' + duration;
+
+  let scale = 'fps=' + fps;
+  if (width && width !== '0') scale += ',scale=' + width + ':-1:flags=lanczos';
+  if (palette) {
+    cmd += ' -vf "' + scale + ',split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"';
+  } else {
+    cmd += ' -vf "' + scale + '"';
+  }
+  cmd += ' -loop ' + loop + ' "' + out + '"';
+
+  const el = document.getElementById('gif-cmd');
+  if (el) el.textContent = cmd;
+}
+
+async function startGif() {
+  if (!capabilities.ffmpeg) { alert('FFmpeg が見つかりません'); return; }
+  if (!gifFiles.length) { alert('入力ファイルを指定してください'); return; }
+  const outDir = capabilities.outputs_dir || '/tmp';
+  const fps      = parseInt(document.getElementById('gif-fps').value);
+  const width    = parseInt(document.getElementById('gif-width').value) || 0;
+  const loop     = parseInt(document.getElementById('gif-loop').value);
+  const palette  = document.getElementById('tog-gif-palette').classList.contains('on');
+  const start    = document.getElementById('gif-start').value.trim();
+  const duration = document.getElementById('gif-duration').value.trim();
+  const params = { fps, width, loop, optimize_palette: palette };
+  if (start) params.start = start;
+  if (duration) params.duration = duration;
+
+  for (const f of gifFiles) {
+    const fname = f.name || f.path.split('/').pop() || 'output';
+    const dot = fname.lastIndexOf('.');
+    const base = dot >= 0 ? fname.slice(0, dot) : fname;
+    const out = outDir + '/' + base + '_' + Date.now() + '.gif';
+    await createJob('video_to_gif', f.path, out, params);
+  }
+  if (gifFiles.length > 1) alert(gifFiles.length + ' 件のジョブをキューに追加しました');
+  showView('queue');
+}
+
 let imageOp = 'resize';
 
 function setImageOp(op) {
@@ -3528,7 +3725,7 @@ function _renderFileInfo(d) {
   if (job && job.type) {
     const provRows = [];
     const typeLabels = {
-      convert: '変換', trim: 'トリム', crop: 'クロップ',
+      convert: '変換', trim: 'トリム', crop: 'クロップ', video_to_gif: 'GIF変換',
       image_resize: 'リサイズ', image_convert: 'フォーマット変換', image_compress: '圧縮',
       ytdlp_download: 'ダウンロード',
     };
@@ -3560,6 +3757,13 @@ function _renderFileInfo(d) {
     } else if (job.type === 'image_convert' || job.type === 'image_compress') {
       if (p.quality != null) provRows.push(['品質', p.quality]);
       if (p.strip_metadata != null) provRows.push(['メタデータ削除', p.strip_metadata ? 'あり' : 'なし']);
+    } else if (job.type === 'video_to_gif') {
+      if (p.fps) provRows.push(['FPS', p.fps]);
+      if (p.width) provRows.push(['幅', p.width + 'px']);
+      if (p.start) provRows.push(['開始', p.start]);
+      if (p.duration) provRows.push(['長さ', p.duration + '秒']);
+      provRows.push(['ループ', p.loop === 0 ? '無限' : String(p.loop) + '回']);
+      provRows.push(['パレット最適化', p.optimize_palette ? 'あり' : 'なし']);
     } else if (job.type === 'ytdlp_download') {
       provRows.push(['URL', inp]);
       if (p.quality) provRows.push(['品質プリセット', p.quality]);
