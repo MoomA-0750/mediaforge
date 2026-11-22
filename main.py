@@ -57,12 +57,25 @@ def _persist_completed_output(job: dict):
     }
     completed_outputs.append(entry)
     try:
-        OUTPUTS_LOG.write_text(json.dumps(completed_outputs, ensure_ascii=False), "utf-8")
-    except Exception:
-        pass
+        tmp = OUTPUTS_LOG.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(completed_outputs, ensure_ascii=False), "utf-8")
+        tmp.replace(OUTPUTS_LOG)  # 書き込み途中で落ちても壊れないよう置き換える
+    except Exception as e:
+        print(f"[warn] could not persist completed_outputs.json: {e}")
 
 
 completed_outputs: list = _load_completed_outputs()
+
+# 実行中ジョブの Task を保持する（参照が無いと GC で途中終了することがある）
+_tasks: set = set()
+
+# 削除 API が触れてよいフォルダー（誤爆防止。ブラウズ・読み出しは制限しない）
+DELETABLE_DIRS = [OUTPUTS_DIR.resolve(), DOWNLOADS_DIR.resolve(), UPLOAD_DIR.resolve()]
+
+
+def _is_http_url(url: str) -> bool:
+    """yt-dlp に渡してよい URL か（http(s) 始まり、空白・制御文字なし）。"""
+    return bool(re.match(r"^https?://\S+$", url or "")) and not re.search(r"[\x00-\x1f]", url)
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
@@ -161,6 +174,8 @@ async def browse(path: str = Query(default=str(Path.home()))):
 @app.post("/api/upload")
 async def upload_file(file: UploadFile = File(...)):
     safe_name = Path(file.filename).name if file.filename else "upload"
+    if safe_name in ("", ".", ".."):
+        safe_name = "upload"
     dest = UPLOAD_DIR / safe_name
     if dest.exists():
         stem = dest.stem
@@ -186,11 +201,8 @@ async def download_file(path: str):
     fp = Path(path)
     if not fp.exists() or not fp.is_file():
         raise HTTPException(404, "File not found")
-    return FileResponse(
-        str(fp),
-        media_type="application/octet-stream",
-        headers={"Content-Disposition": f'attachment; filename="{fp.name}"'},
-    )
+    # filename= を渡すと Starlette が引用符・日本語名を正しくエンコードする
+    return FileResponse(str(fp), media_type="application/octet-stream", filename=fp.name)
 
 
 @app.get("/api/uploads")
@@ -272,9 +284,14 @@ async def list_output_files():
 @app.delete("/api/output-files")
 async def delete_output_file(path: str):
     fp = Path(path).resolve()
+    if not any(fp.is_relative_to(d) for d in DELETABLE_DIRS):
+        raise HTTPException(403, "Only files inside the outputs/downloads/uploads folders can be deleted")
     if not fp.exists() or not fp.is_file():
         raise HTTPException(404, "File not found")
-    fp.unlink()
+    try:
+        fp.unlink()
+    except OSError as e:
+        raise HTTPException(500, f"Could not delete: {e}")
     return {"ok": True}
 
 
@@ -349,8 +366,11 @@ async def probe(path: str):
     )
     stdout, stderr = await proc.communicate()
     if proc.returncode != 0:
-        raise HTTPException(500, f"ffprobe error: {stderr.decode()[:200]}")
-    return json.loads(stdout)
+        raise HTTPException(500, f"ffprobe error: {stderr.decode(errors='replace')[:200]}")
+    try:
+        return json.loads(stdout)
+    except json.JSONDecodeError:
+        raise HTTPException(500, "ffprobe returned invalid JSON")
 
 
 # ── File info (metadata + job provenance) ────────────────────────────────────
@@ -424,17 +444,28 @@ async def ytdlp_formats(url: str):
 
     # -J gives full JSON with all format info; --no-playlist processes only the
     # first item so we always get format details even for playlist URLs.
+    if not _is_http_url(url):
+        raise HTTPException(400, "URL must start with http:// or https://")
     run_env = {**os.environ, "PYTHONUNBUFFERED": "1"}
-    cmd = ["yt-dlp", "-J", "--no-playlist", url]
+    # "--" 以降は URL として扱われ、オプションと解釈されない
+    cmd = ["yt-dlp", "-J", "--no-playlist", "--", url]
     proc = await asyncio.create_subprocess_exec(
         *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
         env=run_env,
     )
-    stdout, stderr = await proc.communicate()
+    try:
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=120)
+    except asyncio.TimeoutError:
+        proc.kill()
+        await proc.wait()
+        raise HTTPException(504, "yt-dlp timed out")
     if proc.returncode != 0:
-        raise HTTPException(400, f"yt-dlp error: {stderr.decode()[:300]}")
+        raise HTTPException(400, f"yt-dlp error: {stderr.decode(errors='replace')[:300]}")
 
-    data = json.loads(stdout)
+    try:
+        data = json.loads(stdout)
+    except json.JSONDecodeError:
+        raise HTTPException(502, "yt-dlp returned invalid JSON")
 
     # yt-dlp sometimes wraps a single video in a playlist envelope even with
     # --no-playlist (e.g. YouTube short URLs).  Detect by the absence of
@@ -480,7 +511,8 @@ async def ytdlp_formats(url: str):
 
 @app.get("/api/system")
 async def system_stats():
-    cpu = psutil.cpu_percent(interval=0.1)
+    # interval 付きの cpu_percent は 0.1 秒ブロックするのでスレッドに逃がす
+    cpu = await asyncio.to_thread(psutil.cpu_percent, 0.1)
     mem = psutil.virtual_memory()
     temp_val = None
     try:
@@ -516,11 +548,19 @@ class JobRequest(BaseModel):
 @app.post("/api/jobs")
 async def create_job(req: JobRequest):
     # yt-dlp jobs don't need an existing input file (input_path is a URL)
-    if not req.type.startswith("ytdlp_") and not Path(req.input_path).exists():
+    if req.type.startswith("ytdlp_"):
+        if not CAPABILITIES["yt_dlp"]:
+            raise HTTPException(503, "yt-dlp not available")
+        if not _is_http_url(req.input_path):
+            raise HTTPException(400, "URL must start with http:// or https://")
+    elif not Path(req.input_path).exists():
         raise HTTPException(400, f"Input file not found: {req.input_path}")
 
     job_id = str(uuid.uuid4())[:8]
-    cmd = _build_cmd(req.type, req.input_path, req.output_path, req.params)
+    try:
+        cmd = _build_cmd(req.type, req.input_path, req.output_path, req.params)
+    except (OSError, ValueError, TypeError) as e:
+        raise HTTPException(400, f"Invalid job parameters: {e}")
     job = {
         "id": job_id,
         "type": req.type,
@@ -538,7 +578,9 @@ async def create_job(req: JobRequest):
         "error": None,
     }
     jobs[job_id] = job
-    asyncio.create_task(_run_job(job_id, cmd))
+    task = asyncio.create_task(_run_job(job_id, cmd))
+    _tasks.add(task)
+    task.add_done_callback(_tasks.discard)
     return _public_job(job)
 
 
@@ -775,6 +817,7 @@ def _build_imagemagick_cmd(job_type: str, inp: str, out: str, p: dict) -> list:
 
 def _build_ytdlp_cmd(job_type: str, url: str, out_dir: str, p: dict) -> list:
     cmd = ["yt-dlp"]
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
 
     # Output template
     out_template = str(Path(out_dir) / "%(title)s.%(ext)s")
@@ -817,7 +860,8 @@ def _build_ytdlp_cmd(job_type: str, url: str, out_dir: str, p: dict) -> list:
     # Progress: --newline prints each update on its own line instead of \r
     cmd += ["--newline", "--progress"]
 
-    cmd.append(url)
+    # "--" で以降を URL に固定し、URL がオプションと解釈されるのを防ぐ
+    cmd += ["--", url]
     return cmd
 
 
