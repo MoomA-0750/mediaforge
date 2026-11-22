@@ -13,9 +13,9 @@ mediaforge のパッケージ更新・堅牢化・systemd 同梱（認証なし�
 - systemd user unit: `systemd/mediaforge.service`（ひな形）と `systemd/install.sh`
 
 ## 残り・注意
-- **systemd の実インストール（`./systemd/install.sh`）は自動判定で拒否されたため未実行**。unit のひな形は `systemd-analyze verify` で警告なし、install.sh は構文確認のみ
-- push は未実施（本人の確認待ち）
+- systemd にインストール済み（enable --now、http 200 確認、2026-11-22）。ログアウト後も動かすには `sudo loginctl enable-linger $USER` が別途必要
+- push 済み（origin main 3f41624）
 - 作業中のテストで作った `.venv` は .gitignore 済み
 
 ## 次にやること
-本人が `./systemd/install.sh` を実行し、`curl localhost:7860/` で確認。
+なし（任意: enable-linger）
