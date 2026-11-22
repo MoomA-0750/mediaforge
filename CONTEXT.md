@@ -29,7 +29,7 @@ A set of Jobs submitted together by the user for the same operation applied to m
 _Avoid_: bulk job, multi-job, group
 
 **Job Type**:
-The string identifier that determines which Tool and operation a Job runs (e.g. `convert`, `trim`, `image_resize`, `ytdlp_download`). Job Type is always scoped to a single Tool.
+The string identifier that determines which Tool and operation a Job runs (e.g. `convert`, `trim`, `video_to_gif`, `image_resize`, `ytdlp_download`). Job Type is always scoped to a single Tool.
 _Avoid_: operation type, command type
 
 ### UI concepts

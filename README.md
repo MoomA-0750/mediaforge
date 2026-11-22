@@ -8,20 +8,37 @@ FastAPI + vanilla JS SPA、ポート **7860** で動く。
 ## 起動
 
 ```bash
-cd ~/ffmpeg_studio
-./run.sh
-# または
-python3 -m uvicorn main:app --host 0.0.0.0 --port 7860
+cd ~/Documents/git-cloned/mediaforge
+./run.sh   # .venv が無ければ作り、requirements.lock の版で依存を入れてから起動
 ```
 
-ブラウザで http://localhost:7860 を開く。
+ブラウザで http://localhost:7860 を開く。0.0.0.0 で待ち受け、認証は無い（LAN 内で使う前提）。
 
 ### 依存パッケージ（Python）
 
+`.venv` に入れる。`requirements.txt` が直接の依存（版固定）、`requirements.lock` が推移依存を含む全固定。
+
 ```bash
-pip install -r requirements.txt
-# fastapi / uvicorn[standard] / psutil / aiofiles / python-multipart
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.lock
 ```
+
+更新するときは `.venv/bin/pip install -U fastapi "uvicorn[standard]" psutil aiofiles python-multipart` で上げ、動作確認後に `requirements.txt` の版と `pip freeze > requirements.lock` を直す。
+
+### サービスとして動かす（systemd user unit）
+
+```bash
+./systemd/install.sh            # ~/.config/systemd/user/ に入れて enable --now
+systemctl --user status mediaforge     # 状態
+systemctl --user restart mediaforge    # 再起動
+systemctl --user stop mediaforge       # 停止
+journalctl --user -u mediaforge -f     # ログ
+./systemd/install.sh uninstall  # 止めて外す
+```
+
+- `.venv` の python で uvicorn を `0.0.0.0:7860` で起動し、落ちたら 3 秒後に自動再起動する
+- PATH に `~/.local/bin` を足してあるので、pipx で入れた yt-dlp も見つかる
+- ログアウト後・ブート直後も動かすには、一度だけ `sudo loginctl enable-linger $USER`
 
 ### 外部ツール（オプション）
 
@@ -29,7 +46,7 @@ pip install -r requirements.txt
 |--------|------|----------------|
 | `ffmpeg` + `ffprobe` | 動画変換・トリム・クロップ | `sudo dnf install ffmpeg` |
 | `imagemagick` (`convert` または `magick`) | 画像処理 | `sudo dnf install ImageMagick` |
-| `yt-dlp` | 動画ダウンロード | `pip install yt-dlp` |
+| `yt-dlp` | 動画ダウンロード | `pipx install yt-dlp`（更新は `pipx upgrade yt-dlp`） |
 
 ツールが存在しなくても起動する。該当タブに **Install Banner** が表示され、インストールコマンドを案内する。
 
@@ -38,16 +55,19 @@ pip install -r requirements.txt
 ## ファイル構成
 
 ```
-ffmpeg_studio/
+mediaforge/
 ├── main.py                  # FastAPI バックエンド（全 API）
 ├── static/
-│   └── index.html           # SPA 全体（HTML + CSS + JS、約 3700 行）
+│   ├── index.html           # SPA 全体（HTML + CSS + JS、約 3900 行）
+│   └── vendor/              # Tailwind 3.4.17 とフォント（Inter / JetBrains Mono / Material Symbols）。オフラインで動く
 ├── uploads/                 # アップロードファイル置き場
 ├── outputs/                 # 変換・処理後ファイル置き場
 ├── downloads/               # yt-dlp ダウンロード先
 ├── completed_outputs.json   # 出力ファイル一覧の永続化
-├── requirements.txt
+├── requirements.txt         # 直接の依存（版固定）
+├── requirements.lock        # 推移依存を含む全固定
 ├── run.sh
+├── systemd/                 # user unit のひな形と install.sh
 ├── CONTEXT.md               # 用語集（Tool / Capability / Job / Batch / Feature / Install Banner）
 └── docs/adr/
     ├── 0001-unified-job-queue.md       # 全ツール共通キューの理由
@@ -84,6 +104,9 @@ ffmpeg_studio/
 - ピクセル値の直接入力
 - アスペクト比維持ドラッグ：端まで引いても比率を保つ（アンカーベースのクランプ）
 - 4-pane オーバーレイ方式（`overflow:hidden` 不使用、ハンドルがはみ出しても見える）
+
+**Video → GIF**
+- 開始・長さ・fps・幅・ループ回数・パレット最適化（`video_to_gif`）
 
 ### Image タブ（ImageMagick）
 
@@ -142,7 +165,7 @@ ffmpeg_studio/
 | GET | `/api/uploads` | アップロード済みファイル一覧 |
 | DELETE | `/api/uploads/{filename}` | アップロードファイル削除 |
 | GET | `/api/output-files` | 出力ファイル一覧 |
-| DELETE | `/api/output-files?path=` | 出力ファイル削除 |
+| DELETE | `/api/output-files?path=` | 出力ファイル削除（outputs/・downloads/・uploads/ 内のみ。外は 403） |
 | GET | `/api/media?path=` | メディアファイル配信（HTML5 video 用） |
 | GET | `/api/thumbnail?path=&t=&w=` | ffmpeg / ImageMagick でサムネイル生成 |
 | GET | `/api/probe?path=` | ffprobe JSON 情報 |
@@ -168,12 +191,12 @@ ffmpeg_studio/
 - **Job Type 判別**:
   - `image_*` → `_build_imagemagick_cmd()`
   - `ytdlp_*` → `_build_ytdlp_cmd()`
-  - それ以外（`convert` / `trim` / `crop`）→ `_build_ffmpeg_cmd()`
+  - それ以外（`convert` / `trim` / `crop` / `video_to_gif`）→ `_build_ffmpeg_cmd()`
 - **出力ファイル管理**: `completed_outputs.json` に永続化（サーバー再起動後も Files タブに残る）
 
 ### フロントエンド（`static/index.html`）
 
-- **単一ファイル SPA**。Tailwind CDN + Material Symbols フォント
+- **単一ファイル SPA**。Tailwind 3.4.17（Play 版を `static/vendor/` に同梱）+ ローカルのフォント。外部への通信は無い
 - **テーマ**: Material 3 ダークテーマ、CSS カスタムプロパティ（`--c-*`）で定義。ライトテーマは `:root.light`
 - **状態管理**: グローバル `state` オブジェクト（`state.crop`, `state.imgcrop`, `state.convFiles` など）
 - **クロップドラッグ**: `initCropDrag(wrapEl, stateRef, renderFn)` が動画・画像で共用
@@ -183,6 +206,8 @@ ffmpeg_studio/
 
 ## 既知の設計メモ
 
+- yt-dlp の URL は http(s) 始まりのみ受け付け、`--` を挟んで引数と解釈されないようにしている
+- 削除 API だけ outputs/downloads/uploads 内に限定（誤爆防止）。ブラウズ・読み出しは制限しない（認証なしの LAN 内利用が前提）
 - ジョブはインメモリのみ。**サーバー再起動でキューはリセット**される
 - `libopenh264` を動画クロップのデフォルトコーデックとして使用（`libx264` より広い環境で動く）
 - バッチ送信は「1ファイル = 1ジョブ」（ADR 0002 参照）。`mogrify` は使わない
