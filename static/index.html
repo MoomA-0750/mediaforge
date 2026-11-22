@@ -273,7 +273,8 @@ h3 { font-weight:650; letter-spacing:-0.005em; }
 .fmt-card { border-radius:var(--shape-lg); transition:border-radius var(--dur-med) var(--ease-spatial),background var(--dur-fast) var(--ease-effects),border-color var(--dur-fast) var(--ease-effects); }
 .fmt-card.selected { border-radius:var(--shape-md); }
 /* navigation: active indicator は pill、切替時にぷるっと広がる */
-.nav-item { padding:4px 20px; gap:2px; font-weight:500; }
+.nav-item { padding:4px 0; width:64px; flex:1 1 0; min-width:0; max-width:80px; gap:2px; font-weight:500; font-size:12px; }
+.select-field { text-overflow:ellipsis; padding-right:36px; }
 .nav-item.active { background:var(--c-secondary-cont); color:var(--c-on-secondary-cont); font-weight:700; animation:m3e-pop var(--dur-med) var(--ease-spatial); }
 .snav-item { border-radius:var(--shape-full); padding:12px 18px; font-weight:500; }
 .snav-item.active { font-weight:700; }
