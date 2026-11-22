@@ -1,5 +1,6 @@
-fastapi>=0.100.0
-uvicorn[standard]>=0.20.0
-psutil>=5.9.0
-aiofiles>=23.0.0
-python-multipart>=0.0.6
+# 動作確認済みの版（2026-11-22）。全依存の固定は requirements.lock
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+psutil==7.2.2
+aiofiles==25.1.0
+python-multipart==0.0.34
