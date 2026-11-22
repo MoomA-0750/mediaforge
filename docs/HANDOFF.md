@@ -19,3 +19,8 @@ mediaforge のパッケージ更新・堅牢化・systemd 同梱（認証なし�
 
 ## 次にやること
 なし（任意: enable-linger）
+
+## 追記: M3 Expressive 化（commit ccefc63・未 push）
+- `static/index.html` の `<style>` 末尾に「Material 3 Expressive layer」ブロックを追加（形・spring 風の動き・state layer・switch・slider・nav の pill）。Tailwind の radius も拡大。元に戻す: そのブロックと radius 設定を消す、または `git revert ccefc63`
+- CRF/Bitrate 切替の未選択が選択中と同じ色だった既存の問題も outlined で区別
+- 確認: ダーク/ライト、デスクトップ/スマホ幅（Convert・Download）
