@@ -14,7 +14,7 @@ mediaforge（ffmpeg / ImageMagick / yt-dlp のローカル Web UI、FastAPI + �
 - M3 Expressive の上書き層を `static/index.html` の `<style>` 末尾に追加（形・動き・state layer・switch・slider・nav）。Tailwind の radius も拡大。CRF/Bitrate 切替の未選択表示、スマホ下部ナビの切れ、select の省略も対応。確認は Video・Download（ダーク／ライト・デスクトップ／スマホ幅）のみ
 
 ## 残っていること
-- 未確認の画面: Files・Queue・Image・Trim/Crop・Settings・ダッシュボードの M3E 見た目（撮って見ていない）
+- 点検済み（Home/Image/Files/Queue/Settings、崩れなし）。Settings のテーマボタンは修正済み。残る指摘は M3E 以前からの仕様で未対応: Image の Start が入力未選択でも有効色／Queue の Clear Done が無効表示にならない／日本語と英語の混在／Trim・Crop の M3E 見た目は未撮影
 - 任意: フォントを Roboto Flex に替える（今は Inter のまま）
 - 未対応の軽微な点: サイドバーの CPU バーが値よりやや長く見えることがある（更新タイミングの見え方と判断）
 
@@ -24,7 +24,7 @@ mediaforge（ffmpeg / ImageMagick / yt-dlp のローカル Web UI、FastAPI + �
 3. 未確認画面を撮って screen-auditor に回し、崩れがあれば `static/index.html` の「Material 3 Expressive layer」ブロックを直す
 
 ## 本人の判断待ち（確認一覧にも記録済み: 2026-11-23/mediaforge-4f1cb39a.md#M3E 化）
-- M3E 化の commit 3 件（ccefc63 / 05372f7 / 76f42c1、未 push）を push してよいか
+- M3E 化の commit（ccefc63 / 05372f7 / 76f42c1 / テーマボタン修正）と HANDOFF 更新（未 push）を push してよいか
 - フォントを Roboto Flex に替えるか
 
 ## 触ってはいけないもの・注意
