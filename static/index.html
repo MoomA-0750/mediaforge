@@ -3446,8 +3446,10 @@ function _updateThemeButtons(mode) {
     const btn = document.getElementById('theme-btn-' + m);
     if (!btn) return;
     const isActive = m === current;
-    btn.style.background = isActive ? 'var(--c-primary)' : '';
-    btn.style.color = isActive ? 'var(--c-on-primary)' : '';
+    // 選択中は filled、未選択は outlined で区別する
+    btn.style.background = isActive ? 'var(--c-primary)' : 'transparent';
+    btn.style.color = isActive ? 'var(--c-on-primary)' : 'var(--c-on-surface-muted)';
+    btn.style.boxShadow = isActive ? 'none' : 'inset 0 0 0 1px var(--c-outline-var)';
   });
 }
 
