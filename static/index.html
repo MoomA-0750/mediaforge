@@ -64,10 +64,11 @@ tailwind.config = {
         mono: ["JetBrains Mono", "monospace"],
       },
       borderRadius: {
-        DEFAULT: "0.25rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
-        "2xl": "1rem",
+        DEFAULT: "0.5rem",
+        lg: "0.75rem",
+        xl: "1rem",
+        "2xl": "1.75rem",
+        "3xl": "2.25rem",
         full: "9999px",
       },
     },
@@ -214,6 +215,95 @@ select { background-image:none; }
 .snav-item:hover { background:var(--c-surface-mid); color:var(--c-on-surface); }
 .snav-item.active { background:var(--c-secondary-cont); color:var(--c-on-secondary-cont); }
 .snav-item.active .material-symbols-outlined { font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+/* ══ Material 3 Expressive layer ═══════════════════════════════════
+   既存トークン(--c-*)はそのまま、形(shape)・動き(motion)・状態レイヤー・
+   強調タイポを M3E に寄せる上書き。外すときはこのブロックごと消す。 */
+:root {
+  /* shape scale */
+  --shape-xs:8px; --shape-sm:12px; --shape-md:16px; --shape-lg:20px; --shape-xl:28px; --shape-full:9999px;
+  /* motion: spatial = overshoot の spring 風、effects = 色・不透明度用 */
+  --ease-spatial:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-spatial-std:cubic-bezier(0.38,1.21,0.22,1);
+  --ease-effects:cubic-bezier(0.34,0.8,0.34,1);
+  --dur-fast:200ms; --dur-med:350ms;
+  --state-hover:0.08; --state-press:0.12;
+}
+@media (prefers-reduced-motion:reduce){ :root{ --dur-fast:0.01ms; --dur-med:0.01ms; } }
+body { letter-spacing:0.005em; }
+/* emphasized typography */
+h1,h2 { font-weight:700; letter-spacing:-0.015em; }
+h3 { font-weight:650; letter-spacing:-0.005em; }
+.label { font-family:Inter,sans-serif; font-weight:600; font-size:12px; letter-spacing:0.04em; color:var(--c-on-surface-muted); margin-bottom:6px; }
+/* state layer helper (hover/press を不透明度ではなく重ね色で表す) */
+.btn-primary,.btn-secondary,.nav-item,.snav-item,.op-pill,.dl-preset,.fmt-card,.file-row,.chip { position:relative; isolation:isolate; }
+.btn-primary::before,.btn-secondary::before,.snav-item::before,.op-pill::before,.dl-preset::before,.fmt-card::before,.file-row::before {
+  content:''; position:absolute; inset:0; border-radius:inherit; background:currentColor; opacity:0; z-index:-1;
+  transition:opacity var(--dur-fast) var(--ease-effects); pointer-events:none;
+}
+.btn-primary:hover::before,.btn-secondary:hover::before,.snav-item:hover::before,.op-pill:hover::before,.dl-preset:hover::before,.fmt-card:hover::before,.file-row:hover::before { opacity:var(--state-hover); }
+.btn-primary:active::before,.btn-secondary:active::before,.snav-item:active::before,.op-pill:active::before,.dl-preset:active::before,.fmt-card:active::before { opacity:var(--state-press); }
+:focus-visible { outline:3px solid var(--c-primary-dim); outline-offset:2px; }
+.input-field:focus-visible,.select-field:focus-visible { outline:none; }
+/* containers: extra-large shape */
+.card,.card-low { border-radius:var(--shape-xl); border-color:transparent; }
+.card { background:var(--c-surface-mid); }
+.card-low { background:var(--c-surface-low); }
+.code-block,.log-area { border-radius:var(--shape-md); border-color:transparent; }
+.modal-box { border-radius:var(--shape-xl); border-color:transparent; box-shadow:0 8px 32px rgba(0,0,0,0.35); }
+.upload-zone { border-radius:var(--shape-xl); border-width:2px; }
+.crop-canvas-wrap,.crop-canvas-wrap img { border-radius:var(--shape-md); }
+#trim-timeline { border-radius:var(--shape-lg); border-color:transparent; }
+/* buttons: full-round, shape morph on press (M3E) */
+.btn-primary { border-radius:var(--shape-full); min-height:48px; padding-inline:24px; font-weight:650; letter-spacing:0.01em;
+  transition:border-radius var(--dur-fast) var(--ease-spatial),transform var(--dur-fast) var(--ease-spatial),box-shadow var(--dur-fast) var(--ease-effects); }
+.btn-primary:hover { opacity:1; box-shadow:0 2px 8px rgba(0,0,0,0.25); }
+.btn-primary:active { transform:scale(0.97); border-radius:var(--shape-md); }
+.btn-secondary { border-radius:var(--shape-full); min-height:40px; padding-inline:18px; font-weight:600;
+  transition:border-radius var(--dur-fast) var(--ease-spatial),transform var(--dur-fast) var(--ease-spatial); }
+.btn-secondary:hover { opacity:1; }
+.btn-secondary:active { transform:scale(0.97); border-radius:var(--shape-sm); }
+/* inputs: 丸みを増やし、フォーカスで枠を太く */
+.input-field,.select-field { border-radius:var(--shape-md); border-width:1px; transition:border-color var(--dur-fast) var(--ease-effects),box-shadow var(--dur-fast) var(--ease-effects); }
+.input-field:focus,.select-field:focus { border-color:var(--c-primary); box-shadow:0 0 0 1px var(--c-primary); }
+/* chips / pills */
+.chip { border-radius:var(--shape-full); padding:4px 12px; font-family:Inter,sans-serif; font-weight:600; }
+.op-pill,.dl-preset { transition:background var(--dur-fast) var(--ease-effects),color var(--dur-fast) var(--ease-effects),border-radius var(--dur-med) var(--ease-spatial),transform var(--dur-fast) var(--ease-spatial); }
+.op-pill.active,.dl-preset.active { background:var(--c-secondary-cont); color:var(--c-on-secondary-cont); border-color:transparent; font-weight:650; }
+.op-pill:active,.dl-preset:active { transform:scale(0.95); }
+.fmt-card { border-radius:var(--shape-lg); transition:border-radius var(--dur-med) var(--ease-spatial),background var(--dur-fast) var(--ease-effects),border-color var(--dur-fast) var(--ease-effects); }
+.fmt-card.selected { border-radius:var(--shape-md); }
+/* navigation: active indicator は pill、切替時にぷるっと広がる */
+.nav-item { padding:4px 20px; gap:2px; font-weight:500; }
+.nav-item.active { background:var(--c-secondary-cont); color:var(--c-on-secondary-cont); font-weight:700; animation:m3e-pop var(--dur-med) var(--ease-spatial); }
+.snav-item { border-radius:var(--shape-full); padding:12px 18px; font-weight:500; }
+.snav-item.active { font-weight:700; }
+@keyframes m3e-pop { from { transform:scale(0.88); } to { transform:scale(1); } }
+/* switch: 52x32、押すと thumb が膨らむ */
+.toggle { width:52px; height:32px; border-radius:var(--shape-full); transition:background var(--dur-fast) var(--ease-effects); }
+.toggle.off { background:var(--c-surface-highest); box-shadow:inset 0 0 0 2px var(--c-outline); }
+.toggle-thumb { top:50%; width:16px; height:16px; margin-top:-8px; transition:left var(--dur-med) var(--ease-spatial),width var(--dur-fast) var(--ease-spatial),height var(--dur-fast) var(--ease-spatial),margin-top var(--dur-fast) var(--ease-spatial),background var(--dur-fast) var(--ease-effects); }
+.toggle.on .toggle-thumb { left:calc(100% - 28px); width:24px; height:24px; margin-top:-12px; background:var(--c-on-primary); }
+.toggle.off .toggle-thumb { left:8px; }
+.toggle:active .toggle-thumb { width:28px; height:28px; margin-top:-14px; }
+.toggle.on:active .toggle-thumb { left:calc(100% - 32px); }
+.toggle.off:active .toggle-thumb { left:4px; }
+/* progress: 太め・丸め、先端も丸く */
+.progress-bar { height:8px; border-radius:var(--shape-full); }
+.progress-bar-fill { border-radius:var(--shape-full); transition:width var(--dur-med) var(--ease-effects); }
+.upload-progress-bar { height:6px; border-radius:var(--shape-full); }
+.upload-progress-fill { border-radius:var(--shape-full); }
+/* slider: 太いトラック + 縦バーのハンドル (M3E) */
+input[type=range] { height:16px; border-radius:var(--shape-full); }
+input[type=range]::-webkit-slider-thumb { width:6px; height:36px; border-radius:var(--shape-full); border:3px solid var(--c-surface-mid); box-sizing:content-box; transition:transform var(--dur-fast) var(--ease-spatial); }
+input[type=range]:active::-webkit-slider-thumb { transform:scaleX(0.7); }
+input[type=range]::-moz-range-thumb { width:6px; height:36px; border-radius:9999px; background:var(--c-primary); border:3px solid var(--c-surface-mid); }
+/* file rows / checkbox */
+.file-row { border-radius:var(--shape-md); }
+.fp-cb { border-radius:6px; }
+/* crop / trim handles */
+.crop-box { border-radius:4px; }
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-thumb { border-radius:var(--shape-full); }
 </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -1485,8 +1575,14 @@ function setQualityMode(mode) {
   state.qualityMode = mode;
   document.getElementById('crf-control').classList.toggle('hidden', mode !== 'crf');
   document.getElementById('bitrate-control').classList.toggle('hidden', mode !== 'bitrate');
-  document.getElementById('qmode-crf').style.background = mode === 'crf' ? 'var(--c-secondary-cont)' : '';
-  document.getElementById('qmode-bitrate').style.background = mode === 'bitrate' ? 'var(--c-secondary-cont)' : '';
+  for (const m of ['crf', 'bitrate']) {
+    const b = document.getElementById('qmode-' + m);
+    const on = mode === m;
+    // 選択中は tonal、未選択は outlined（M3E の segmented 風）
+    b.style.background = on ? 'var(--c-secondary-cont)' : 'transparent';
+    b.style.color = on ? 'var(--c-on-secondary-cont)' : 'var(--c-on-surface-muted)';
+    b.style.boxShadow = on ? 'none' : 'inset 0 0 0 1px var(--c-outline-var)';
+  }
   convUpdate();
 }
 
